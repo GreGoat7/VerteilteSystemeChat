@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo
+    volumes:
+      - mongo_data:/data/db
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "15672:15672" # Management-Interface
+      - "5672:5672" # Standard RabbitMQ Port
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  backend:
+    build: ./backend
+    ports:
+      - "4000:4000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/chatdb
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - mongo
+      - rabbitmq
+
+  frontend:
+    build: ./frontend/ChatFrontend
+    ports:
+      - "3001:80" # Ändern Sie dies entsprechend, wenn Sie einen anderen Port bevorzugen
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:
+  rabbitmq_data:
