@@ -1,0 +1,20 @@
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+.App {
+  display: flex;
+  height: 100%;
+}
+
+.sidebar {
+  width: 72px;
+  background: #202225;
+  height: 100%;
+  /* Restliche Stile */
+}
+
+/* Restliche Stile */
