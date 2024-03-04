@@ -7,19 +7,20 @@ export const useSocket = () => {
   const [chat, setChat] = useState([]);
 
   useEffect(() => {
-    const handleNewMessage = (msg) => {
-      setChat((prevChat) => [...prevChat, msg]);
+    const handleNewMessage = (msgObj) => {
+      setChat((prevChat) => [...prevChat, msgObj]);
     };
     socket.on("chat message", handleNewMessage);
 
     return () => socket.off("chat message", handleNewMessage);
   }, [chat]);
 
-  const sendMessage = useCallback((username, message) => {
-    console.log("username", username);
-    console.log("message", message);
-    socket.emit("chat message", { username, message });
-  }, []);
+  // Innerhalb Ihrer useSocket Hook
+  const sendMessage = (msgObj) => {
+    console.log(msgObj.username);
+    console.log(msgObj.message);
+    socket.emit("chat message", msgObj);
+  };
 
   return { chat, sendMessage };
 };

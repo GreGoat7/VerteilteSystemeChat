@@ -4,13 +4,13 @@ import { useSocket } from "../hooks/useSocket";
 
 function Chat({}) {
   const { username } = useAuth();
-  const { chat, sendMessage } = useSocket();
+  const { chat, sendMessage } = useSocket([]);
   const [message, setMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (message.trim()) {
-      sendMessage(username, message);
+      sendMessage({ username, message });
       setMessage("");
     }
   };
@@ -18,11 +18,14 @@ function Chat({}) {
     <div className="">
       <h1>Chat</h1>
       <ul id="">
-        {chat.map((msg, index) => (
-          <li key={index}>
-            {msg.username}: {msg.message}
-          </li>
-        ))}
+        {chat.map((msgObj, index) => {
+          console.log(msgObj); // Debugging
+          return (
+            <li key={index}>
+              {msgObj?.username}: {msgObj?.message}
+            </li>
+          );
+        })}
       </ul>
       <form onSubmit={handleSubmit}>
         <input
