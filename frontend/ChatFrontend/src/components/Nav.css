@@ -4,15 +4,28 @@ nav {
   height: 100%;
   width: 72px;
 
-  display: flex; /* Use Flexbox */
-  flex-direction: column; /* Stack one on top of another */
-  align-items: space-between; /* Align horizontally */
+  
+  align-items: self-start; /* Align horizontally */
   gap: 15px; /* Vertical gap between the links */
   padding-top: 12px;
   transition: width 0.1s ease;
 }
 
-.nav-icos .list-container {
+
+.nav-icons {
+  background: #202225;
+  float: left;
+  height: 100%;
+  width: 72px;
+
+  display: flex; /* Use Flexbox */
+  flex-direction: column; /* Stack one on top of another */
+  align-items: center; /* Align horizontally */
+  gap: 15px; /* Vertical gap between the links */
+  padding-top: 12px;
+  transition: width 0.1s ease;
+}
+.nav-icons .list-container {
   display: flex;
   align-items: center;
   gap: 15px;
@@ -59,4 +72,14 @@ nav a:hover,
 nav a.active {
   border-radius: 25%;
   background: #3ba55d;
+}
+
+.add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add:hover #add-icon {
+  color: white;
 }
