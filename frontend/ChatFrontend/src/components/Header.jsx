@@ -13,9 +13,8 @@ function Header() {
       padding="4"
       bgGradient="linear(to-r, teal.700, green.600)"
       color="white"
-      borderRadius="20px"
     >
-      <Text fontSize="lg" fontWeight="bold">
+      <Text fontSize="lg" fontWeight="bold" color={"white"}>
         Meine Webseite
       </Text>
       <Box>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../hooks/useSocket";
+import Nav from "./NavGroups";
 
 function Chat({}) {
   const { username } = useAuth();
@@ -15,27 +16,28 @@ function Chat({}) {
     }
   };
   return (
-    <div className="">
-      <h1>Chat</h1>
-      <ul id="">
-        {chat.map((msgObj, index) => {
-          console.log(msgObj); // Debugging
-          return (
+    <>
+      <Nav />
+      <div className="">
+        <h1>Chat</h1>
+        <ul id="">
+          {chat.map((msg, index) => (
             <li key={index}>
-              {msgObj?.username}: {msgObj?.message}
+              {msg.username}: {msg.message}
             </li>
-          );
-        })}
-      </ul>
-      <form onSubmit={handleSubmit}>
-        <input
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Nachricht eingeben"
-        />
-        <button type="submit">Senden</button>
-      </form>
-    </div>
+          ))}
+        </ul>
+        <form onSubmit={handleSubmit}>
+          <input
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Nachricht eingeben"
+          />
+          <button type="submit">Senden</button>
+        </form>
+      </div>
+    </>
+
   );
 }
 
