@@ -1,53 +1,36 @@
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
+const cors = require("cors");
 
-// Express-App und HTTP-Server erstellen
+// Import der Datenbankverbindung
+const connectDB = require("./database/database");
+
+// Import des Socket-Handlers
+const chatSocket = require("./sockets/chatSocket");
+
+// Datenbankverbindung herstellen
+connectDB();
+
 const app = express();
 const server = http.createServer(app);
-
-const cors = require("cors");
-app.use(
-  cors({
-    origin: "*", // Erlaubt Zugriff vom Frontend-Port
-  })
-);
-
-// socket.io mit dem HTTP-Server initialisieren
 const io = socketIo(server, {
   cors: {
-    origin: "*", // oder "*" für alle Origins
+    origin: "*", // Erlaubt Zugriff vom Frontend-Port
     methods: ["GET", "POST"],
     allowedHeaders: ["my-custom-header"],
     credentials: true,
   },
 });
 
-// Port festlegen, auf dem der Server lauscht
-const PORT = process.env.PORT || 4000;
+// CORS-Middleware für Cross-Origin-Anfragen
+app.use(cors());
 
-// Middleware, um statische Dateien zu bedienen (optional, falls benötigt)
+// Statische Dateien servieren (wenn Sie eine Frontend-Build-Verzeichnis haben)
 app.use(express.static("public"));
 
-// socket.io Verbindungs-Event
-io.on("connection", (socket) => {
-  console.log("Ein neuer Client ist verbunden");
+// Initialisierung der Socket-Logik
+chatSocket(io);
 
-  // Event-Listener für benutzerdefinierte Events (z.B. 'chat message')
-  socket.on("chat message", (msg) => {
-    console.log("Nachricht erhalten: " + msg);
-
-    // Nachricht an alle verbundenen Clients senden
-    io.emit("chat message", msg);
-  });
-
-  // Verbindungsabbruch-Event
-  socket.on("disconnect", () => {
-    console.log("Ein Client hat die Verbindung getrennt");
-  });
-});
-
-// Server starten
-server.listen(PORT, () => {
-  console.log(`Server läuft auf Port ${PORT}`);
-});
+const PORT = process.env.PORT || 4000;
+server.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));

@@ -5,13 +5,13 @@ import Nav from "./NavGroups";
 
 function Chat({}) {
   const { username } = useAuth();
-  const { chat, sendMessage } = useSocket();
+  const { chat, sendMessage } = useSocket([]);
   const [message, setMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (message.trim()) {
-      sendMessage(username, message);
+      sendMessage({ username, message });
       setMessage("");
     }
   };
@@ -37,6 +37,7 @@ function Chat({}) {
         </form>
       </div>
     </>
+
   );
 }
 
