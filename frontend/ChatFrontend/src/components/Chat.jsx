@@ -3,17 +3,19 @@ import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../hooks/useSocket";
 
 function Chat({}) {
-  const { username } = useAuth();
+  const { username, userId, token, isLoggedIn } = useAuth();
   const { chat, sendMessage } = useSocket([]);
   const [message, setMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (message.trim()) {
-      sendMessage({ username, message });
+      // Annahme: `userId` ist die eindeutige ID des Benutzers und im Authentifizierungskontext gespeichert
+      sendMessage({ username: username, sender: userId, content: message }); // Anpassung für die korrekte Benennung und Werte
       setMessage("");
     }
   };
+
   return (
     <div className="">
       <h1>Chat</h1>
@@ -22,7 +24,7 @@ function Chat({}) {
           console.log(msgObj); // Debugging
           return (
             <li key={index}>
-              {msgObj?.username}: {msgObj?.message}
+              {msgObj?.username}: {msgObj?.content}
             </li>
           );
         })}
