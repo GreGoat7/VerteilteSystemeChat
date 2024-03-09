@@ -5,7 +5,7 @@ import Nav from "./NavGroups";
 import "./Chat.css";
 
 function Chat({}) {
-  const { username } = useAuth();
+  const { username, userId, token, isLoggedIn } = useAuth();
   const { chat, sendMessage } = useSocket([]);
   const [message, setMessage] = useState("");
   const [activeGroupId, setActiveGroupId] = useState(1);
@@ -28,10 +28,13 @@ function Chat({}) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (message.trim()) {
-      sendMessage({ username, message, chatId: activeGroupId });
+
+      // Annahme: `userId` ist die eindeutige ID des Benutzers und im Authentifizierungskontext gespeichert
+      sendMessage({ senderId: userId, senderName: username, content: message }); // Anpassung für die korrekte Benennung und Werte
       setMessage("");
     }
   };
+  console.log("chat", chat);
   return (
     <>
       <Nav
@@ -45,9 +48,9 @@ function Chat({}) {
           <h1>{activeGroup.name}</h1>
           <div id="chat-messages">
             <ul>
-              {activeChat?.map((msg, index) => (
+              {activeChat?.map((msgObj, index) => (
                 <li key={index}>
-                  {msg.username}: {msg.message}
+                  {msgObj?.senderName}: {msgObj?.content}
                 </li>
               ))}
             </ul>
@@ -61,6 +64,7 @@ function Chat({}) {
             <button type="submit">Senden</button>
           </form>
         </div>
+
       </div>
     </>
   );

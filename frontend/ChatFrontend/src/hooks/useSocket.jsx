@@ -17,8 +17,9 @@ export const useSocket = () => {
 
   // Innerhalb Ihrer useSocket Hook
   const sendMessage = (msgObj) => {
-    console.log(msgObj.username);
-    console.log(msgObj.message);
+    console.log(msgObj.senderId);
+    console.log(msgObj.content);
+    console.log(msgObj.senderName);
     socket.emit("chat message", msgObj);
   };
 
