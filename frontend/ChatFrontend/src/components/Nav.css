@@ -4,13 +4,11 @@ nav {
   height: 100%;
   width: 72px;
 
-  
   align-items: self-start; /* Align horizontally */
   gap: 15px; /* Vertical gap between the links */
   padding-top: 12px;
   transition: width 0.1s ease;
 }
-
 
 .nav-icons {
   background: #202225;
