@@ -15,17 +15,18 @@ module.exports = (io) => {
           content: msgObj.content,
           senderName: msgObj.senderName,
           senderId: msgObj.senderId, // Verwenden Sie die UserID, nicht den Benutzernamen
-          group: msgObj.groupId, // Optional, kann undefined sein für öffentliche Nachrichten
+          // group: msgObj.groupId, // Optional, kann undefined sein für öffentliche Nachrichten
         });
 
         await message.save();
         console.log("Nachricht gespeichert");
-
+        console.log("msgobject,");
         if (msgObj.groupId) {
           // Wenn die Nachricht zu einer Gruppe gehört, senden Sie sie nur an diese Gruppe
-          socket.to(msgObj.groupId).emit("chat message", msgObj);
+          io.emit("chat message", msgObj);
         } else {
           // Öffentliche Nachricht, an alle verbundenen Clients senden
+          console.log("messages gets emited");
           io.emit("chat message", msgObj);
         }
       } catch (err) {

@@ -14,17 +14,14 @@ function Chat({}) {
     { type: "group", id: 2, name: "Gruppe 2" },
     { type: "chat", id: 3, name: "Chat with guy" },
   ]);
-  console.log("groupss", groups);
   const activeGroup = groups.find((group) => {
     return group.id === activeGroupId;
   });
-  console.log("chatouter", chat);
   const activeChat = chat.filter((chat) => {
     console.log("chat", chat);
     console.log("chatid", chat.groupId);
     return chat.groupId === activeGroupId;
   });
-  console.log("activegroup", activeGroup);
 
   const handleSubmit = (e) => {
     e.preventDefault();
