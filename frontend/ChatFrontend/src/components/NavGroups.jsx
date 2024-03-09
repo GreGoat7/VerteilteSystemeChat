@@ -14,16 +14,11 @@ import {
   Input,
 } from "@chakra-ui/react";
 
-function Nav() {
+function Nav({ groups, setGroups, activeGroupId, setActiveGroupId }) {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [newGroupName, setNewGroupName] = useState("");
-  const [activeGroupId, setActiveGroupId] = useState(0);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [groups, setGroups] = useState([
-    { type: "group", id: 1, name: "Gruppe 1" },
-    { type: "group", id: 2, name: "Gruppe 2" },
-    { type: "chat", id: 3, name: "Chat with guy" },
-  ]);
 
   const addGroup = () => {
     const newGroup = { id: Date.now(), name: `Gruppe ${groups.length + 1}` };
@@ -34,9 +29,6 @@ function Nav() {
     setGroups(groups.filter((group) => group.id !== groupId));
   };
 
-  console.log("isopmen", isOpen);
-  console.log("onclose", onClose);
-  console.log("onopen", onOpen);
   return (
     <>
       <nav>
@@ -97,12 +89,11 @@ function CustomModal({ groups, setGroups }) {
   const handleSave = () => {
     const newGroup = {
       type: "group",
-      id: groups.length,
+      id: groups.length + 1,
       name: groupName,
     };
     setGroups([...groups, newGroup]);
 
-    console.log(groupName);
     onClose(); // Modal schließen
   };
   return (
