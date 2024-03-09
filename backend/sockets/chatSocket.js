@@ -13,8 +13,8 @@ module.exports = (io) => {
         // Sie müssen die userID und optional die groupID an den Client übermitteln
         const message = new Message({
           content: msgObj.content,
-          username: msgObj.username,
-          sender: msgObj.sender, // Verwenden Sie die UserID, nicht den Benutzernamen
+          senderName: msgObj.senderName,
+          senderId: msgObj.senderId, // Verwenden Sie die UserID, nicht den Benutzernamen
           group: msgObj.groupId, // Optional, kann undefined sein für öffentliche Nachrichten
         });
 

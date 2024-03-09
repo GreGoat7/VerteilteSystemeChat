@@ -12,11 +12,11 @@ function Chat({}) {
     e.preventDefault();
     if (message.trim()) {
       // Annahme: `userId` ist die eindeutige ID des Benutzers und im Authentifizierungskontext gespeichert
-      sendMessage({ sender: username, senderId: userId, content: message }); // Anpassung für die korrekte Benennung und Werte
+      sendMessage({ senderId: userId, senderName: username, content: message }); // Anpassung für die korrekte Benennung und Werte
       setMessage("");
     }
   };
-
+  console.log("chat", chat);
   return (
     <>
       <Nav />
@@ -25,7 +25,7 @@ function Chat({}) {
         <ul id="">
           {chat.map((msgObj, index) => (
             <li key={index}>
-              {msgObj?.username}: {msgObj?.content}
+              {msgObj?.senderName}: {msgObj?.content}
             </li>
           ))}
         </ul>
@@ -39,7 +39,6 @@ function Chat({}) {
         </form>
       </div>
     </>
-
   );
 }
 
