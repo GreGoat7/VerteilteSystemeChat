@@ -11,7 +11,7 @@ function Chat({}) {
     e.preventDefault();
     if (message.trim()) {
       // Annahme: `userId` ist die eindeutige ID des Benutzers und im Authentifizierungskontext gespeichert
-      sendMessage({ username: username, sender: userId, content: message }); // Anpassung für die korrekte Benennung und Werte
+      sendMessage({ sender: username, senderId: userId, content: message }); // Anpassung für die korrekte Benennung und Werte
       setMessage("");
     }
   };
