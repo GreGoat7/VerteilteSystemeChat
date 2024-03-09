@@ -1,0 +1,85 @@
+nav {
+  background: #202225;
+  float: left;
+  height: 100%;
+  width: 72px;
+
+  
+  align-items: self-start; /* Align horizontally */
+  gap: 15px; /* Vertical gap between the links */
+  padding-top: 12px;
+  transition: width 0.1s ease;
+}
+
+
+.nav-icons {
+  background: #202225;
+  float: left;
+  height: 100%;
+  width: 72px;
+
+  display: flex; /* Use Flexbox */
+  flex-direction: column; /* Stack one on top of another */
+  align-items: center; /* Align horizontally */
+  gap: 15px; /* Vertical gap between the links */
+  padding-top: 12px;
+  transition: width 0.1s ease;
+}
+.nav-icons .list-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+nav:hover {
+  width: 16rem;
+}
+
+nav:hover .info-container {
+  display: block;
+}
+.info-container {
+  display: none;
+  margin-left: 1rem;
+  flex-grow: 1; /* Lässt die Elemente den verfügbaren Platz ausfüllen */
+}
+.list-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+nav a {
+  display: block;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  margin: 0;
+  border-radius: 50%; /* Makes a circle */
+  background: #36393f;
+
+  transition: border-radius 250ms, background 250ms;
+}
+
+nav hr {
+  display: block;
+  width: 32px;
+  height: 2px;
+  border-radius: 196px;
+  border: none; /* Removes a white border that exists by default */
+  background: #36393f;
+}
+
+nav a:hover,
+nav a.active {
+  border-radius: 25%;
+  background: #3ba55d;
+}
+
+.add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add:hover #add-icon {
+  color: white;
+}
