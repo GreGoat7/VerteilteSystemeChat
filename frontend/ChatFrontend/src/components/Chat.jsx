@@ -4,26 +4,28 @@ import { useSocket } from "../hooks/useSocket";
 import Nav from "./NavGroups";
 
 function Chat({}) {
-  const { username } = useAuth();
+  const { username, userId, token, isLoggedIn } = useAuth();
   const { chat, sendMessage } = useSocket([]);
   const [message, setMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (message.trim()) {
-      sendMessage({ username, message });
+      // Annahme: `userId` ist die eindeutige ID des Benutzers und im Authentifizierungskontext gespeichert
+      sendMessage({ sender: username, senderId: userId, content: message }); // Anpassung für die korrekte Benennung und Werte
       setMessage("");
     }
   };
+
   return (
     <>
       <Nav />
       <div className="">
         <h1>Chat</h1>
         <ul id="">
-          {chat.map((msg, index) => (
+          {chat.map((msgObj, index) => (
             <li key={index}>
-              {msg.username}: {msg.message}
+              {msgObj?.username}: {msgObj?.content}
             </li>
           ))}
         </ul>

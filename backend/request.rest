@@ -1,0 +1,22 @@
+GET http://localhost:4000/users
+
+
+####
+
+POST http://localhost:4000/register
+Content-Type: application/json
+
+{
+    "name": "NewTest",
+    "password": "12345"
+}
+
+###
+
+POST http://localhost:4000/login
+Content-Type: application/json
+
+{
+    "name": "New",
+    "password": "1234"
+}

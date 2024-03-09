@@ -1,13 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import axios from "axios";
 
 function Login({}) {
   const [username, setUsername] = useState("");
+  const [password, setPassword] = useState(""); // Passwortfeld bereits hinzugefügt
   const { login } = useAuth();
 
-  function handleLogin(e) {
+  async function handleLogin(e) {
     e.preventDefault();
-    login(username);
+
+    try {
+      const response = await axios.post("http://localhost:4000/login", {
+        username,
+        password,
+      });
+
+      if (response.data.token) {
+        // Stellen Sie sicher, dass der Token vorhanden ist
+        login(response.data.username, response.data.userId, response.token);
+      } else {
+        console.error("Login fehlgeschlagen");
+      }
+    } catch (error) {
+      console.error("Login-Fehler:", error);
+    }
   }
 
   return (
@@ -18,6 +35,12 @@ function Login({}) {
           placeholder="Enter Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          type="password" // Passwortfeld
+          placeholder="Enter Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Login</button>
       </form>
