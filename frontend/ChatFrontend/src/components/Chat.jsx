@@ -18,23 +18,29 @@ function Chat({}) {
   const activeGroup = groups.find((group) => {
     return group.id === activeGroupId;
   });
-
+  console.log("chatouter", chat);
   const activeChat = chat.filter((chat) => {
     console.log("chat", chat);
-    return chat.chatId === activeGroupId;
+    console.log("chatid", chat.groupId);
+    return chat.groupId === activeGroupId;
   });
   console.log("activegroup", activeGroup);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (message.trim()) {
-
       // Annahme: `userId` ist die eindeutige ID des Benutzers und im Authentifizierungskontext gespeichert
-      sendMessage({ senderId: userId, senderName: username, content: message }); // Anpassung für die korrekte Benennung und Werte
+      sendMessage({
+        senderId: userId,
+        senderName: username,
+        content: message,
+        groupId: activeGroupId,
+      }); // Anpassung für die korrekte Benennung und Werte
       setMessage("");
     }
   };
-  console.log("chat", chat);
+  console.log("activeChat", activeChat);
+  console.log("actviveGroupid", activeGroupId);
   return (
     <>
       <Nav
@@ -64,7 +70,6 @@ function Chat({}) {
             <button type="submit">Senden</button>
           </form>
         </div>
-
       </div>
     </>
   );
