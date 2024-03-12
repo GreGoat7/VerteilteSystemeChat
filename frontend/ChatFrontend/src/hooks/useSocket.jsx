@@ -20,6 +20,7 @@ export const useSocket = () => {
     console.log(msgObj.senderId);
     console.log(msgObj.content);
     console.log(msgObj.senderName);
+    console.log(msgObj.senderTimestamp);
     socket.emit("chat message", msgObj);
   };
 

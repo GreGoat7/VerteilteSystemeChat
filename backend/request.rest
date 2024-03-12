@@ -4,7 +4,7 @@ POST http://localhost:4000/api/register
 Content-Type: application/json
 
 {
-    "username": "UniqueName",
+    "username": "MsgTest",
     "password": "123"
 }
 
@@ -14,15 +14,50 @@ POST http://localhost:4000/api/login
 Content-Type: application/json
 
 {
-    "username": "UniqueName",
+    "username": "MsgTest",
     "password": "123"
 }
 ###
 
 POST http://localhost:4000/api/createGroup
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYwMjJhYzJmZWU1NGJmNmVmYjMzNWUiLCJ1c2VybmFtZSI6IlVuaXF1ZU5hbWUiLCJpYXQiOjE3MTAyNDc4ODMsImV4cCI6MTcxMDMzNDI4M30.RIv1ci7CNNs8NkNMy67EWklVLC5IuMewfay4zmb-JVg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYwN2QzMjQ2ZGM5N2NhMjNhOGQzMTMiLCJ1c2VybmFtZSI6Ik1zZ1Rlc3QiLCJpYXQiOjE3MTAyNTk1MDYsImV4cCI6MTcxMDM0NTkwNn0.uZPFkmapryZxeLqvSq9KvYjxGRhnZA3AEeV9qfPB6OY
 
 {
-    "groupName": "newGroup"
+    "groupName": "Te"
+}
+
+###
+
+POST http://localhost:4000/api/addGroupMember
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYwN2QzMjQ2ZGM5N2NhMjNhOGQzMTMiLCJ1c2VybmFtZSI6Ik1zZ1Rlc3QiLCJpYXQiOjE3MTAyNTk1MDYsImV4cCI6MTcxMDM0NTkwNn0.uZPFkmapryZxeLqvSq9KvYjxGRhnZA3AEeV9qfPB6OY
+
+{
+    "groupId": "65f07d5546dc97ca23a8d316",
+    "userIdToAdd": "65f0795dd1bade7f77058e21"
+}
+
+###
+
+GET http://localhost:4000/api/getGroups
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYwN2QzMjQ2ZGM5N2NhMjNhOGQzMTMiLCJ1c2VybmFtZSI6Ik1zZ1Rlc3QiLCJpYXQiOjE3MTAyNjE1OTMsImV4cCI6MTcxMDM0Nzk5M30.ggl_zLHne38byoj3H7ilgfbw0CWu24lIME4sP2LP4To
+
+###
+GET http://localhost:4000/api/groups/65f08beac073fa4b1a7f4fbf/messages
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYwN2QzMjQ2ZGM5N2NhMjNhOGQzMTMiLCJ1c2VybmFtZSI6Ik1zZ1Rlc3QiLCJpYXQiOjE3MTAyNjMxODYsImV4cCI6MTcxMDM0OTU4Nn0.XW1Mvg0V4CC4DuIFbCYx1tawCi53u0Xu1mOLWXT_NLs
+
+###
+GET http://localhost:4000/api/getUsers
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYwN2QzMjQ2ZGM5N2NhMjNhOGQzMTMiLCJ1c2VybmFtZSI6Ik1zZ1Rlc3QiLCJpYXQiOjE3MTAyNjE1OTMsImV4cCI6MTcxMDM0Nzk5M30.ggl_zLHne38byoj3H7ilgfbw0CWu24lIME4sP2LP4To
+
+####
+POST http://localhost:4000/api/directChat
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYwN2QzMjQ2ZGM5N2NhMjNhOGQzMTMiLCJ1c2VybmFtZSI6Ik1zZ1Rlc3QiLCJpYXQiOjE3MTAyNTk1MDYsImV4cCI6MTcxMDM0NTkwNn0.uZPFkmapryZxeLqvSq9KvYjxGRhnZA3AEeV9qfPB6OY
+
+{
+    "partnerId": "65e718918531617eb9aca4eb"
 }
