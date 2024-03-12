@@ -8,11 +8,13 @@ function Chat({}) {
   const { username, userId, token, isLoggedIn } = useAuth();
   const { chat, sendMessage } = useSocket([]);
   const [message, setMessage] = useState("");
-  const [activeGroupId, setActiveGroupId] = useState(1);
+  const [activeGroupId, setActiveGroupId] = useState(
+    "65f07d5546dc97ca23a8d316"
+  );
   const [groups, setGroups] = useState([
-    { type: "group", id: 1, name: "Gruppe 1" },
-    { type: "group", id: 2, name: "Gruppe 2" },
-    { type: "chat", id: 3, name: "Chat with guy" },
+    { type: "group", id: "65f07d5546dc97ca23a8d316", name: "Gruppe 1" },
+    { type: "group", id: "2", name: "Gruppe 2" },
+    { type: "chat", id: "3", name: "Chat with guy" },
   ]);
   const activeGroup = groups.find((group) => {
     return group.id === activeGroupId;
@@ -32,6 +34,7 @@ function Chat({}) {
         senderName: username,
         content: message,
         groupId: activeGroupId,
+        senderTimestamp: Date.now(),
       }); // Anpassung für die korrekte Benennung und Werte
       setMessage("");
     }

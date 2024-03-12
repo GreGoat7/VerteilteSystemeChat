@@ -14,8 +14,9 @@ module.exports = (io) => {
         const message = new Message({
           content: msgObj.content,
           senderName: msgObj.senderName,
-          senderId: msgObj.senderId, // Verwenden Sie die UserID, nicht den Benutzernamen
-          // group: msgObj.groupId, // Optional, kann undefined sein für öffentliche Nachrichten
+          senderId: msgObj.senderId,
+          senderTimestamp: msgObj.senderTimestamp,
+          group: msgObj.groupId,
         });
 
         await message.save();

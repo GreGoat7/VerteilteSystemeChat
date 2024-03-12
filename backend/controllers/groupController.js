@@ -1,4 +1,5 @@
 const Group = require("../models/Group");
+const Message = require("../models/Message");
 
 exports.createGroup = async (req, res) => {
   const groupName = req.body.groupName;
@@ -62,5 +63,52 @@ exports.addUserToGroup = async (req, res) => {
     res
       .status(500)
       .json({ message: "Fehler beim Hinzufügen des Benutzers zur Gruppe." });
+  }
+};
+
+// Controller-Methode zum Abrufen aller Gruppen eines Benutzers
+exports.getUserGroups = async (req, res) => {
+  try {
+    // Die User-ID aus dem Request extrahieren (gesetzt durch die authenticateToken-Middleware)
+    const userId = req.userId;
+
+    // Alle Gruppen finden, in denen der Benutzer ein Mitglied ist
+    const userGroups = await Group.find({ members: userId });
+
+    // Gruppen an den Client senden
+    res.status(200).json(userGroups);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Fehler beim Abrufen der Gruppen" });
+  }
+};
+
+// In deinem Controller
+exports.getGroupMessages = async (req, res) => {
+  try {
+    const { groupId } = req.params;
+    const userId = req.userId;
+
+    // Zuerst die Gruppe finden, um sicherzustellen, dass der Benutzer Zugriff hat
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ message: "Gruppe nicht gefunden." });
+    }
+
+    // Überprüfen, ob der Benutzer ein Mitglied der Gruppe ist
+    if (!group.members.includes(userId)) {
+      return res.status(403).json({
+        message: "Zugriff verweigert. Benutzer ist kein Mitglied der Gruppe.",
+      });
+    }
+
+    // Wenn der Benutzer Mitglied der Gruppe ist, holen wir die Nachrichten
+    const groupMessages = await Message.find({ group: groupId });
+    res.status(200).json(groupMessages);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Fehler beim Abrufen der Gruppennachrichten" });
   }
 };

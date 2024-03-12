@@ -14,6 +14,7 @@ const messageSchema = new mongoose.Schema({
     ref: "Group",
     required: false,
   }, // Optional, für Gruppennachrichten
+  senderTimestamp: { type: Date, required: true },
   timestamp: { type: Date, default: Date.now },
 });
 
