@@ -1,22 +1,28 @@
-GET http://localhost:4000/users
-
-
 ####
 
-POST http://localhost:4000/register
+POST http://localhost:4000/api/register
 Content-Type: application/json
 
 {
-    "name": "Pana",
-    "password": "12345"
+    "username": "UniqueName",
+    "password": "123"
 }
 
 ###
 
-POST http://localhost:4000/login
+POST http://localhost:4000/api/login
 Content-Type: application/json
 
 {
-    "name": "New",
-    "password": "1234"
+    "username": "UniqueName",
+    "password": "123"
+}
+###
+
+POST http://localhost:4000/api/createGroup
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYwMjJhYzJmZWU1NGJmNmVmYjMzNWUiLCJ1c2VybmFtZSI6IlVuaXF1ZU5hbWUiLCJpYXQiOjE3MTAyNDc4ODMsImV4cCI6MTcxMDMzNDI4M30.RIv1ci7CNNs8NkNMy67EWklVLC5IuMewfay4zmb-JVg
+
+{
+    "groupName": "newGroup"
 }
