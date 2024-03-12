@@ -4,17 +4,31 @@ const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
   try {
+    // Überprüfen, ob ein Benutzer mit demselben Benutzernamen bereits existiert
+    const userExists = await User.findOne({ username: req.body.username });
+
+    // Wenn ein Benutzer existiert, senden Sie eine Fehlermeldung zurück
+    if (userExists) {
+      return res.status(409).json({ message: "Username already exists" });
+    }
+
+    // Wenn kein Benutzer existiert, fahren Sie mit der Erstellung fort
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const user = new User({
-      username: req.body.name,
+      username: req.body.username, // Stellen Sie sicher, dass Sie hier req.body.username statt req.body.name verwenden
       password: hashedPassword,
     });
+
+    await user.save(); // Speichern Sie den Benutzer in der Datenbank
+
+    // Erstellen eines Tokens für den neuen Benutzer
     const token = jwt.sign(
       { userId: user._id, username: user.username },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
     );
-    user.save();
+
+    // Senden der Antwort zurück zum Client
     res.status(201).json({ username: user.username, userId: user._id, token });
   } catch (err) {
     console.error(err);
