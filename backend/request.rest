@@ -4,11 +4,11 @@ POST http://localhost:4000/api/register
 Content-Type: application/json
 
 {
-    "username": "MsgTest",
+    "username": "123",
     "password": "123"
 }
 
-###
+### eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYxYWFmNzNhMjY2ZDkyMzNhZjE4ZjEiLCJ1c2VybmFtZSI6IjEyMyIsImlhdCI6MTcxMDMzNjc1OSwiZXhwIjoxNzEwNDIzMTU5fQ.v55KJsbwICvY2kg6o1R3hYmyHnp4zZoX67a_yBlUN1I
 
 POST http://localhost:4000/api/login
 Content-Type: application/json
@@ -24,7 +24,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYwN2QzMjQ2ZGM5N2NhMjNhOGQzMTMiLCJ1c2VybmFtZSI6Ik1zZ1Rlc3QiLCJpYXQiOjE3MTAyNTk1MDYsImV4cCI6MTcxMDM0NTkwNn0.uZPFkmapryZxeLqvSq9KvYjxGRhnZA3AEeV9qfPB6OY
 
 {
-    "groupName": "Te"
+    "groupName": "k"
 }
 
 ###
@@ -45,8 +45,8 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYwN2QzMjQ2ZGM5N2NhMjNhOGQzMTMiLCJ1c2VybmFtZSI6Ik1zZ1Rlc3QiLCJpYXQiOjE3MTAyNjE1OTMsImV4cCI6MTcxMDM0Nzk5M30.ggl_zLHne38byoj3H7ilgfbw0CWu24lIME4sP2LP4To
 
 ###
-GET http://localhost:4000/api/groups/65f08beac073fa4b1a7f4fbf/messages
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYwN2QzMjQ2ZGM5N2NhMjNhOGQzMTMiLCJ1c2VybmFtZSI6Ik1zZ1Rlc3QiLCJpYXQiOjE3MTAyNjMxODYsImV4cCI6MTcxMDM0OTU4Nn0.XW1Mvg0V4CC4DuIFbCYx1tawCi53u0Xu1mOLWXT_NLs
+GET http://localhost:4000/api/groups/65f1b3a53a266d9233af18ff/messages
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYxYWFmNzNhMjY2ZDkyMzNhZjE4ZjEiLCJ1c2VybmFtZSI6IjEyMyIsImlhdCI6MTcxMDMzNjc1OSwiZXhwIjoxNzEwNDIzMTU5fQ.v55KJsbwICvY2kg6o1R3hYmyHnp4zZoX67a_yBlUN1I
 
 ###
 GET http://localhost:4000/api/getUsers

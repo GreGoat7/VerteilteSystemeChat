@@ -13,13 +13,14 @@ import {
   useDisclosure,
   Input,
 } from "@chakra-ui/react";
+import useCreateGroup from "../hooks/useCreateGroup";
+import useGroups from "../hooks/useGroups";
 
 function Nav({ groups, setGroups, activeGroupId, setActiveGroupId }) {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [newGroupName, setNewGroupName] = useState("");
-
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const { loading, error } = useGroups();
   const addGroup = () => {
     const newGroup = { id: Date.now(), name: `Gruppe ${groups.length + 1}` };
     setGroups([...groups, newGroup]);
@@ -38,8 +39,8 @@ function Nav({ groups, setGroups, activeGroupId, setActiveGroupId }) {
             .map((singlechat) => (
               <a
                 href="#"
-                className={activeGroupId === singlechat.id ? "active" : ""}
-                onClick={() => setActiveGroupId(singlechat.id)}
+                className={activeGroupId === singlechat._id ? "active" : ""}
+                onClick={() => setActiveGroupId(singlechat._id)}
               ></a>
             ))}
 
@@ -49,8 +50,8 @@ function Nav({ groups, setGroups, activeGroupId, setActiveGroupId }) {
             .map((group) => (
               <a
                 href="#"
-                className={activeGroupId === group.id ? "active" : ""}
-                onClick={() => setActiveGroupId(group.id)}
+                className={activeGroupId === group._id ? "active" : ""}
+                onClick={() => setActiveGroupId(group._id)}
               ></a>
             ))}
 
@@ -85,16 +86,10 @@ function Nav({ groups, setGroups, activeGroupId, setActiveGroupId }) {
 function CustomModal({ groups, setGroups }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [groupName, setGroupName] = useState("");
+  const { createGroup, loading, error } = useGroups();
 
   const handleSave = () => {
-    const newGroup = {
-      type: "group",
-      id: groups.length + 1,
-      name: groupName,
-    };
-    setGroups([...groups, newGroup]);
-
-    onClose(); // Modal schließen
+    createGroup(groupName);
   };
   return (
     <>
@@ -107,6 +102,8 @@ function CustomModal({ groups, setGroups }) {
           <ModalHeader>Neue Gruppe erstellen</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
+            {loading && <div>Loading...</div>}
+            {error && <div>Error: {error.message}</div>}
             <Input
               placeholder="Gruppenname"
               value={groupName}

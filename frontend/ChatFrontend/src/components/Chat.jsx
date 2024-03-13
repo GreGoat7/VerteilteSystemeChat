@@ -3,26 +3,24 @@ import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../hooks/useSocket";
 import Nav from "./NavGroups";
 import "./Chat.css";
+import useGroups from "../hooks/useGroups";
+import useGetMessages from "../hooks/useGetMessages";
 
 function Chat({}) {
   const { username, userId, token, isLoggedIn } = useAuth();
-  const { chat, sendMessage } = useSocket([]);
+  const { sendMessage } = useSocket([]);
   const [message, setMessage] = useState("");
   const [activeGroupId, setActiveGroupId] = useState(
     "65f07d5546dc97ca23a8d316"
   );
-  const [groups, setGroups] = useState([
-    { type: "group", id: "65f07d5546dc97ca23a8d316", name: "Gruppe 1" },
-    { type: "group", id: "2", name: "Gruppe 2" },
-    { type: "chat", id: "3", name: "Chat with guy" },
-  ]);
+  const { groups } = useGroups(); // Annahme, dass dieser Hook die Gruppen und eine Funktion zum Setzen der Gruppen zurückgibt
   const activeGroup = groups.find((group) => {
-    return group.id === activeGroupId;
+    return group._id === activeGroupId;
   });
-  const activeChat = chat.filter((chat) => {
-    console.log("chat", chat);
-    console.log("chatid", chat.groupId);
-    return chat.groupId === activeGroupId;
+  const { messages, loading, error } = useGetMessages(activeGroupId); // Annahme, dass
+  console.log("messages: ", messages);
+  const activeChat = messages.filter((messages) => {
+    return messages.group === activeGroupId;
   });
 
   const handleSubmit = (e) => {
@@ -39,19 +37,17 @@ function Chat({}) {
       setMessage("");
     }
   };
-  console.log("activeChat", activeChat);
   console.log("actviveGroupid", activeGroupId);
   return (
     <>
       <Nav
         groups={groups}
-        setGroups={setGroups}
         activeGroupId={activeGroupId}
         setActiveGroupId={setActiveGroupId}
       />
       <div className="chat">
         <div className="chat-box">
-          <h1>{activeGroup.name}</h1>
+          <h1>{activeGroup?.name}</h1>
           <div id="chat-messages">
             <ul>
               {activeChat?.map((msgObj, index) => (
