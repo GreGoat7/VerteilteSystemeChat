@@ -23,17 +23,19 @@ nav {
   padding-top: 12px;
   transition: width 0.1s ease;
 }
+
 .nav-icons .list-container {
   display: flex;
   align-items: center;
   gap: 15px;
 }
+
 nav:hover {
-  width: 16rem;
+  width: 20rem;
 }
 
 nav:hover .info-container {
-  display: block;
+  display: flex;
 }
 .info-container {
   display: none;

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-
+import axios from "axios";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -8,12 +8,35 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null); // Hinzufügen des Tokens
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const login = (username, userId, token) => {
-    setUsername(username);
-    setUserId(userId);
-    setToken(token); // Speichern des Tokens
-    setIsLoggedIn(true);
-    localStorage.setItem("token", token); // Token im localStorage speichern
+  const register = async (username, password) => {
+    try {
+      const response = await axios.post("http://localhost:4000/api/register", {
+        username,
+        password,
+      });
+      // Eventuell: Setze Zustände basierend auf der Antwort
+      console.log("Registrierung erfolgreich", response.data);
+    } catch (error) {
+      console.error("Registrierungsfehler", error);
+    }
+  };
+
+  const login = async (username, password) => {
+    try {
+      const response = await axios.post("http://localhost:4000/api/login", {
+        username,
+        password,
+      });
+      if (response.data.token) {
+        setToken(response.data.token);
+        setUsername(username);
+        setUserId(response.data.userId);
+        setIsLoggedIn(true);
+        localStorage.setItem("token", response.data.token);
+      }
+    } catch (error) {
+      console.error("Login-Fehler", error);
+    }
   };
 
   const logout = () => {
@@ -26,7 +49,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ username, userId, token, isLoggedIn, login, logout }}
+      value={{ username, userId, token, isLoggedIn, login, logout, register }}
     >
       {children}
     </AuthContext.Provider>

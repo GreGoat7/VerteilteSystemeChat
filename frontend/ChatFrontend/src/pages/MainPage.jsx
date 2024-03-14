@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import Chat from "./../components/Chat";
-import Login from "./../components/Login";
+import LoginRegister from "./../components/LoginRegister";
 import Header from "../components/Header";
 
 function MainPage() {
@@ -10,7 +10,7 @@ function MainPage() {
   return (
     <>
       <Header />
-      {isLoggedIn ? <Chat /> : <Login />}
+      {isLoggedIn ? <Chat /> : <LoginRegister />}
     </>
   );
 }

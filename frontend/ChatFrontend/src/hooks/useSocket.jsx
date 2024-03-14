@@ -1,19 +1,19 @@
 import { useEffect, useState, useCallback } from "react";
 import io from "socket.io-client";
+import useGetMessages from "./useGetMessages";
 
 const socket = io("http://localhost:4000");
 
-export const useSocket = () => {
-  const [chat, setChat] = useState([]);
-
+export const useSocket = (setMessages) => {
   useEffect(() => {
     const handleNewMessage = (msgObj) => {
-      setChat((prevChat) => [...prevChat, msgObj]);
+      console.log("gets executed");
+      setMessages((prevMessages) => [...prevMessages, msgObj]);
     };
     socket.on("chat message", handleNewMessage);
 
     return () => socket.off("chat message", handleNewMessage);
-  }, [chat]);
+  }, []);
 
   // Innerhalb Ihrer useSocket Hook
   const sendMessage = (msgObj) => {
@@ -24,5 +24,5 @@ export const useSocket = () => {
     socket.emit("chat message", msgObj);
   };
 
-  return { chat, sendMessage };
+  return { sendMessage };
 };
