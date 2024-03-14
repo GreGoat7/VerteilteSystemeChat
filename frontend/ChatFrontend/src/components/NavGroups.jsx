@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./Nav.css"; // Stelle sicher, dass du deinen CSS-Pfad hier richtig angibst
+import "./Css/Nav.css"; // Stelle sicher, dass du deinen CSS-Pfad hier richtig angibst
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Modal,
@@ -16,23 +16,17 @@ import useCreateGroup from "../hooks/useCreateGroup";
 import useGroups from "../hooks/useGroups";
 import useGetUsers from "../hooks/useGetUsers";
 import { Input, List, ListItem } from "@chakra-ui/react";
+import useAddGroupMember from "../hooks/useAddGroupMember";
+import { useAuth } from "../context/AuthContext";
 
 function Nav({ groups, setGroups, activeGroupId, setActiveGroupId }) {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [newGroupName, setNewGroupName] = useState("");
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const { users, loading, error } = useGetUsers();
-
-  const deleteGroup = (groupId) => {
-    setGroups(groups.filter((group) => group.id !== groupId));
-  };
-
+  console.log("groups", groups);
   return (
     <>
       <nav>
         <div className="nav-icons">
           {groups
-            .filter((group) => group.type === "chat")
+            .filter((group) => group.type === "direct")
             .map((singlechat) => (
               <a
                 href="#"
@@ -40,7 +34,7 @@ function Nav({ groups, setGroups, activeGroupId, setActiveGroupId }) {
                 onClick={() => setActiveGroupId(singlechat._id)}
               ></a>
             ))}
-
+          <CreateDirectChatModal setGroups={setGroups} />
           <hr />
           {groups
             .filter((group) => group.type === "group")
@@ -56,14 +50,10 @@ function Nav({ groups, setGroups, activeGroupId, setActiveGroupId }) {
         </div>
         <div className="nav-info">
           {groups
-            .filter((group) => group.type === "chat")
+            .filter((group) => group.type === "direct")
             .map((singlechat) => (
               <div className="info-container">
-                <span>{singlechat.name}</span>
-                <AddMemberModal
-                  groupId={singlechat._id}
-                  groupName={group.name}
-                />
+                <span>Chat mit {singlechat.name}</span>
               </div>
             ))}
           <hr />
@@ -77,6 +67,47 @@ function Nav({ groups, setGroups, activeGroupId, setActiveGroupId }) {
             ))}
         </div>
       </nav>
+    </>
+  );
+}
+function CreateDirectChatModal({ setGroups }) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [partnerId, setPartnerId] = useState("");
+  const { createDirectChat, loading, error } = useGroups();
+
+  const handleSave = async () => {
+    const newDirectChat = await createDirectChat(partnerId);
+
+    setGroups((prevGroups) => [...prevGroups, newDirectChat]);
+
+    onClose();
+  };
+  return (
+    <>
+      <a href="#" className={"add"} onClick={onOpen}>
+        <AddIcon boxSize={6} color={"#3ba55d"} id="add-icon" />
+      </a>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>DirectChat mit User starten</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {loading && <div>Loading...</div>}
+            {error && <div>Error: {error.message}</div>}
+            <UserSearchWithChakra setUserIdToAdd={setPartnerId} />
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={handleSave}>
+              Speichern
+            </Button>
+            <Button variant="ghost" onClick={onClose}>
+              Abbrechen
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 }
@@ -126,26 +157,46 @@ function CreateGroupModal({ setGroups }) {
     </>
   );
 }
-function UserSearchWithChakra() {
+function UserSearchWithChakra({ setUserIdToAdd }) {
   const { users } = useGetUsers();
-  const [searchTerm, setSearchTerm] = useState("");
-
+  const [userToAdd, setUserToAdd] = useState("");
+  const { username } = useAuth();
+  console.log("usertoadd", userToAdd);
   const filteredUsers = users
+    .filter((user) => user.username !== username)
     .filter((user) =>
-      user.username.toLowerCase().includes(searchTerm.toLowerCase())
+      user.username.toLowerCase().includes(userToAdd.toLowerCase())
     )
     .sort((a, b) => a.username.localeCompare(b.username));
+
+  const handleOnChange = (e) => {
+    setUserToAdd(e.target.value);
+    const userToBeAdded = users.find((user) => {
+      return user.username === userToAdd;
+    });
+    console.log("userIdToAdd", userToBeAdded);
+    setUserIdToAdd(userToBeAdded._id);
+  };
 
   return (
     <div>
       <Input
         placeholder="Benutzer suchen..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        value={userToAdd}
+        onChange={handleOnChange}
       />
       <List spacing={2}>
         {filteredUsers.map((user) => (
-          <ListItem key={user.id}>{user.username}</ListItem>
+          <ListItem
+            key={user.id}
+            cursor="pointer"
+            onClick={() => {
+              setUserToAdd(user.username);
+              setUserIdToAdd(user._id);
+            }}
+          >
+            {user.username}
+          </ListItem>
         ))}
       </List>
     </div>
@@ -154,17 +205,18 @@ function UserSearchWithChakra() {
 
 function AddMemberModal({ groupId, groupName }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [userToAdd, setUserToAdd] = useState("");
-  const { users, loading, error } = useGetUsers();
+  const [userIdToAdd, setUserIdToAdd] = useState("");
+  const { users, loading: usersLoading, error: usersError } = useGetUsers();
 
-  const filteredUsers = users
-    .filter((user) =>
-      user.username.toLowerCase().includes(userToAdd.toLowerCase())
-    )
-    .sort((a, b) => a.username.localeCompare(b.username));
+  const {
+    addGroupMember,
+    loading: addGroupMemberLoading,
+    error: addGroupMemberError,
+  } = useAddGroupMember();
 
+  console.log("userIdToAdd", userIdToAdd);
   const handleSave = async () => {
-    onClose();
+    const newMember = await addGroupMember(groupId, userIdToAdd);
   };
 
   return (
@@ -178,14 +230,16 @@ function AddMemberModal({ groupId, groupName }) {
           <ModalHeader>User zur Gruppe {groupName}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {loading && <div>Loading...</div>}
-            {error && <div>Error: {error.message}</div>}
-            <UserSearchWithChakra />
+            {addGroupMemberLoading && <div>Loading...</div>}
+            {addGroupMemberError && (
+              <div>Error: {addGroupMemberError.message}</div>
+            )}
+            <UserSearchWithChakra setUserIdToAdd={setUserIdToAdd} />
           </ModalBody>
 
           <ModalFooter>
             <Button colorScheme="blue" mr={3} onClick={handleSave}>
-              Speichern
+              Hinzufügen
             </Button>
             <Button variant="ghost" onClick={onClose}>
               Abbrechen

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../hooks/useSocket";
 import Nav from "./NavGroups";
-import "./Chat.css";
+import "./Css/Chat.css";
 import useGroups from "../hooks/useGroups";
 import useGetMessages from "../hooks/useGetMessages";
 
@@ -34,7 +34,7 @@ function Chat({}) {
         senderId: userId,
         senderName: username,
         content: message,
-        group: activeGroupId,
+        groupId: activeGroupId,
         senderTimestamp: Date.now(),
       }); // Anpassung für die korrekte Benennung und Werte
       setMessage("");
