@@ -8,17 +8,20 @@ import useGetMessages from "../hooks/useGetMessages";
 
 function Chat({}) {
   const { username, userId, token, isLoggedIn } = useAuth();
-  const { sendMessage } = useSocket([]);
+  const [messages, setMessages] = useState([]);
+  const [groups, setGroups] = useState([]);
   const [message, setMessage] = useState("");
-  const [activeGroupId, setActiveGroupId] = useState(
-    "65f07d5546dc97ca23a8d316"
-  );
-  const { groups } = useGroups(); // Annahme, dass dieser Hook die Gruppen und eine Funktion zum Setzen der Gruppen zurückgibt
+  const [activeGroupId, setActiveGroupId] = useState("");
+  const { sendMessage } = useSocket(setMessages);
+  const {} = useGroups(groups, setGroups); // Annahme, dass dieser Hook die Gruppen und eine Funktion zum Setzen der Gruppen zurückgibt
+
+  const { loading, error } = useGetMessages(activeGroupId, setMessages); // Annahme, dass
+  console.log("messages: ", messages);
+
   const activeGroup = groups.find((group) => {
     return group._id === activeGroupId;
   });
-  const { messages, loading, error } = useGetMessages(activeGroupId); // Annahme, dass
-  console.log("messages: ", messages);
+
   const activeChat = messages.filter((messages) => {
     return messages.group === activeGroupId;
   });
@@ -31,7 +34,7 @@ function Chat({}) {
         senderId: userId,
         senderName: username,
         content: message,
-        groupId: activeGroupId,
+        group: activeGroupId,
         senderTimestamp: Date.now(),
       }); // Anpassung für die korrekte Benennung und Werte
       setMessage("");
@@ -42,6 +45,7 @@ function Chat({}) {
     <>
       <Nav
         groups={groups}
+        setGroups={setGroups}
         activeGroupId={activeGroupId}
         setActiveGroupId={setActiveGroupId}
       />

@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
-const useGroups = () => {
-  const [groups, setGroups] = useState([]);
+const useGroups = (groups, setGroups) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { token } = useAuth();
@@ -33,13 +32,11 @@ const useGroups = () => {
     }
   };
 
-  const setNewGroup = () => {
-    fetchGroups();
-  };
-
   const createGroup = async (groupName) => {
+    console.log("1");
     setLoading(true);
     try {
+      console.log("1");
       const response = await axios.post(
         "http://localhost:4000/api/createGroup",
         { groupName },
@@ -51,18 +48,15 @@ const useGroups = () => {
         }
       );
 
-      setGroups((prev) => prev);
-      setGroups((prev) => {
-        return [...prev, response.data.group];
-      });
       setLoading(false);
+      return response.data.group;
     } catch (err) {
       setError(err);
       setLoading(false);
     }
   };
 
-  return { groups, createGroup, loading, error };
+  return { createGroup, loading, error };
 };
 
 export default useGroups;

@@ -11,20 +11,17 @@ import {
   ModalCloseButton,
   Button,
   useDisclosure,
-  Input,
 } from "@chakra-ui/react";
 import useCreateGroup from "../hooks/useCreateGroup";
 import useGroups from "../hooks/useGroups";
+import useGetUsers from "../hooks/useGetUsers";
+import { Input, List, ListItem } from "@chakra-ui/react";
 
 function Nav({ groups, setGroups, activeGroupId, setActiveGroupId }) {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [newGroupName, setNewGroupName] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { loading, error } = useGroups();
-  const addGroup = () => {
-    const newGroup = { id: Date.now(), name: `Gruppe ${groups.length + 1}` };
-    setGroups([...groups, newGroup]);
-  };
+  const { users, loading, error } = useGetUsers();
 
   const deleteGroup = (groupId) => {
     setGroups(groups.filter((group) => group.id !== groupId));
@@ -55,7 +52,7 @@ function Nav({ groups, setGroups, activeGroupId, setActiveGroupId }) {
               ></a>
             ))}
 
-          <CustomModal groups={groups} setGroups={setGroups} />
+          <CreateGroupModal setGroups={setGroups} />
         </div>
         <div className="nav-info">
           {groups
@@ -63,9 +60,10 @@ function Nav({ groups, setGroups, activeGroupId, setActiveGroupId }) {
             .map((singlechat) => (
               <div className="info-container">
                 <span>{singlechat.name}</span>
-                <button onClick={() => deleteGroup(singlechat.id)}>
-                  Löschen
-                </button>
+                <AddMemberModal
+                  groupId={singlechat._id}
+                  groupName={group.name}
+                />
               </div>
             ))}
           <hr />
@@ -74,7 +72,7 @@ function Nav({ groups, setGroups, activeGroupId, setActiveGroupId }) {
             .map((group) => (
               <div className="info-container">
                 <span>{group.name}</span>
-                <button onClick={() => deleteGroup(group.id)}>Löschen</button>
+                <AddMemberModal groupId={group._id} groupName={group.name} />
               </div>
             ))}
         </div>
@@ -83,13 +81,17 @@ function Nav({ groups, setGroups, activeGroupId, setActiveGroupId }) {
   );
 }
 
-function CustomModal({ groups, setGroups }) {
+function CreateGroupModal({ setGroups }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [groupName, setGroupName] = useState("");
   const { createGroup, loading, error } = useGroups();
 
-  const handleSave = () => {
-    createGroup(groupName);
+  const handleSave = async () => {
+    const newGroup = await createGroup(groupName);
+
+    setGroups((prevGroups) => [...prevGroups, newGroup]);
+
+    onClose();
   };
   return (
     <>
@@ -109,6 +111,76 @@ function CustomModal({ groups, setGroups }) {
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
             />
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={handleSave}>
+              Speichern
+            </Button>
+            <Button variant="ghost" onClick={onClose}>
+              Abbrechen
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
+function UserSearchWithChakra() {
+  const { users } = useGetUsers();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredUsers = users
+    .filter((user) =>
+      user.username.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => a.username.localeCompare(b.username));
+
+  return (
+    <div>
+      <Input
+        placeholder="Benutzer suchen..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      <List spacing={2}>
+        {filteredUsers.map((user) => (
+          <ListItem key={user.id}>{user.username}</ListItem>
+        ))}
+      </List>
+    </div>
+  );
+}
+
+function AddMemberModal({ groupId, groupName }) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [userToAdd, setUserToAdd] = useState("");
+  const { users, loading, error } = useGetUsers();
+
+  const filteredUsers = users
+    .filter((user) =>
+      user.username.toLowerCase().includes(userToAdd.toLowerCase())
+    )
+    .sort((a, b) => a.username.localeCompare(b.username));
+
+  const handleSave = async () => {
+    onClose();
+  };
+
+  return (
+    <>
+      <a href="#" className={"add"} onClick={onOpen}>
+        <AddIcon boxSize={6} color={"#3ba55d"} id="add-icon" />
+      </a>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>User zur Gruppe {groupName}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {loading && <div>Loading...</div>}
+            {error && <div>Error: {error.message}</div>}
+            <UserSearchWithChakra />
           </ModalBody>
 
           <ModalFooter>

@@ -2,12 +2,10 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
-const useGetMessages = (groupId) => {
-  const [messages, setMessages] = useState([]);
+const useGetMessages = (groupId, setMessages) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { token } = useAuth();
-  console.log("messages from usegetmessages", messages);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -40,7 +38,7 @@ const useGetMessages = (groupId) => {
     setMessages((prevMessages) => [...prevMessages, newMessage]);
   };
 
-  return { messages, loading, error, updateMessages };
+  return { loading, error, updateMessages };
 };
 
 export default useGetMessages;
