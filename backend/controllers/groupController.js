@@ -103,7 +103,7 @@ exports.getGroupMessages = async (req, res) => {
     }
 
     // Wenn der Benutzer Mitglied der Gruppe ist, holen wir die Nachrichten
-    const groupMessages = await Message.find({ group: groupId });
+    const groupMessages = await Message.find({ groupId: groupId });
     res.status(200).json(groupMessages);
   } catch (error) {
     console.error(error);

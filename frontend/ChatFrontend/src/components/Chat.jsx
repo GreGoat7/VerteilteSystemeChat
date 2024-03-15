@@ -23,7 +23,7 @@ function Chat({}) {
   });
 
   const activeChat = messages.filter((messages) => {
-    return messages.group === activeGroupId;
+    return messages.groupId === activeGroupId;
   });
 
   const handleSubmit = (e) => {
