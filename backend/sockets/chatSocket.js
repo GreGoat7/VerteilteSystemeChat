@@ -16,7 +16,7 @@ module.exports = (io) => {
           senderName: msgObj.senderName,
           senderId: msgObj.senderId,
           senderTimestamp: msgObj.senderTimestamp,
-          group: msgObj.groupId,
+          groupId: msgObj.groupId,
         });
 
         await message.save();
