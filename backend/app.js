@@ -11,13 +11,17 @@ connectDB();
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server, {
+
+// Jetzt, wo `server` definiert ist, kannst du socket.io initialisieren
+const io = require("socket.io")(server, {
   cors: {
     origin: "*", // Erlaubt Zugriff vom Frontend-Port
     methods: ["GET", "POST"],
     allowedHeaders: ["my-custom-header"],
     credentials: true,
   },
+  pingInterval: 10000, // Wie oft Heartbeats gesendet werden (in Millisekunden)
+  pingTimeout: 5000, // Timeout, nach dem eine Verbindung als getrennt betrachtet wird, wenn kein Heartbeat empfangen wurde (in Millisekunden)
 });
 
 // CORS-Middleware für Cross-Origin-Anfragen

@@ -1,16 +1,16 @@
 ####
 
-POST http://localhost:4000/api/register
+POST http://localhost/api/register
 Content-Type: application/json
 
 {
-    "username": "1",
-    "password": "1"
+    "username": "TreafikTest",
+    "password": "123"
 }
 
 ### eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYxYWFmNzNhMjY2ZDkyMzNhZjE4ZjEiLCJ1c2VybmFtZSI6IjEyMyIsImlhdCI6MTcxMDMzNjc1OSwiZXhwIjoxNzEwNDIzMTU5fQ.v55KJsbwICvY2kg6o1R3hYmyHnp4zZoX67a_yBlUN1I
 
-POST http://localhost:4000/api/login
+POST http://localhost/api/login
 Content-Type: application/json
 
 {

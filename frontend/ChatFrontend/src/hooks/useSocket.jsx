@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import io from "socket.io-client";
 import useGetMessages from "./useGetMessages";
 
-const socket = io("http://localhost:4000");
+const socket = io("http://localhost");
 
 export const useSocket = (setMessages) => {
   useEffect(() => {

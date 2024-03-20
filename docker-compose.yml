@@ -1,6 +1,24 @@
 version: "3.8"
 
 services:
+  traefik:
+    image: traefik:v2.6
+    command:
+      - "--api.insecure=true" # Aktiviere das Dashboard (nicht für Produktion empfohlen)
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      #- "--log.level=DEBUG"
+    ports:
+      - "80:80" # Der Port, auf dem Traefik auf Anfragen lauscht
+      - "8080:8080" # Port für das Traefik Dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock" # Erlaubt Traefik, die Docker-API zu beobachten
+    depends_on:
+      - mongo
+      - rabbitmq
+      - backend
+
   mongo:
     image: mongo
     ports:
@@ -18,8 +36,11 @@ services:
 
   backend:
     build: ./backend
-    ports:
-      - "4000:4000"
+    labels:
+      - "traefik.enable=true"
+      #- "traefik.http.services.backend.loadbalancer.sticky.cookie=true"
+      - "traefik.http.routers.backend.rule=Host(`localhost`)" # Definiere die Regel, unter der der Service erreichbar ist
+      - "traefik.http.services.backend.loadbalancer.server.port=4000"
     environment:
       - MONGO_URI=mongodb://mongo:27017/chatdb
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672

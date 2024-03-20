@@ -11,7 +11,7 @@ const useCreateGroup = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/createGroup",
+        "http://localhost/api/createGroup",
         {
           groupName,
         },

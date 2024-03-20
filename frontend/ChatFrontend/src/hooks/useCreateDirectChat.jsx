@@ -11,7 +11,7 @@ const useCreateDirectChat = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/directChat",
+        "http://localhost/api/directChat",
         { partnerId },
         {
           headers: {
