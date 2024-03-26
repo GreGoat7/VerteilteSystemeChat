@@ -11,7 +11,7 @@ const useAddGroupMember = () => {
     setLoading(true);
     try {
       await axios.post(
-        "http://localhost:4000/api/addGroupMember",
+        "http://localhost/api/addGroupMember",
         { groupId, userIdToAdd },
         {
           headers: {

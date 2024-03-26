@@ -11,7 +11,7 @@ const useGetUsers = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/getUsers", {
+        const response = await axios.get("http://localhost/api/getUsers", {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,

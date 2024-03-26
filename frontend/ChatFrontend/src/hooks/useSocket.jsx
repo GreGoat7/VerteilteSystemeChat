@@ -1,27 +1,44 @@
-import { useEffect, useState, useCallback } from "react";
-import io from "socket.io-client";
-import useGetMessages from "./useGetMessages";
-
-const socket = io("http://localhost:4000");
+import { useEffect, useState, useRef } from "react";
 
 export const useSocket = (setMessages) => {
+  const ws = useRef(null);
+
   useEffect(() => {
-    const handleNewMessage = (msgObj) => {
-      console.log("gets executed");
-      setMessages((prevMessages) => [...prevMessages, msgObj]);
+    // Initialisiere die WebSocket-Verbindung und weise sie ws.current zu
+    ws.current = new WebSocket("ws://localhost/ws/");
+
+    ws.current.onopen = () => {
+      console.log("WebSocket Verbindung hergestellt.");
     };
-    socket.on("chat message", handleNewMessage);
 
-    return () => socket.off("chat message", handleNewMessage);
-  }, []);
+    ws.current.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      console.log("Nachricht erhalten:", message);
+      setMessages((prevMessages) => [...prevMessages, message]);
+    };
 
-  // Innerhalb Ihrer useSocket Hook
+    ws.current.onclose = () => {
+      console.log("WebSocket Verbindung geschlossen.");
+    };
+
+    ws.current.onerror = (error) => {
+      console.error("WebSocket Fehler:", error);
+    };
+
+    return () => {
+      // Schließe die WebSocket-Verbindung beim Aufräumen
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, [setMessages]);
+
   const sendMessage = (msgObj) => {
-    console.log(msgObj.senderId);
-    console.log(msgObj.content);
-    console.log(msgObj.senderName);
-    console.log(msgObj.senderTimestamp);
-    socket.emit("chat message", msgObj);
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      ws.current.send(JSON.stringify(msgObj));
+    } else {
+      console.error("WebSocket ist nicht geöffnet.");
+    }
   };
 
   return { sendMessage };

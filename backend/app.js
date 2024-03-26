@@ -1,7 +1,7 @@
 const express = require("express");
 const router = require("./controllers/routes"); // Pfad anpassen, falls nötig
 const http = require("http");
-const socketIo = require("socket.io");
+const websocket = require("ws");
 const cors = require("cors");
 const connectDB = require("./database/database");
 const chatSocket = require("./sockets/chatSocket");
@@ -11,14 +11,6 @@ connectDB();
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server, {
-  cors: {
-    origin: "*", // Erlaubt Zugriff vom Frontend-Port
-    methods: ["GET", "POST"],
-    allowedHeaders: ["my-custom-header"],
-    credentials: true,
-  },
-});
 
 // CORS-Middleware für Cross-Origin-Anfragen
 app.use(cors());
@@ -28,8 +20,12 @@ app.use(express.static("public"));
 app.use(express.json());
 app.use("/api", router);
 
-// Initialisierung der Socket-Logik
-chatSocket(io);
+// Erstelle den WebSocket-Server auf demselben Port wie den HTTP-Server
+
+const wss = new websocket.WebSocketServer({ port: 8080 });
+
+// WebSocket-Logik ausgelagert in chatSocket
+chatSocket(wss);
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));

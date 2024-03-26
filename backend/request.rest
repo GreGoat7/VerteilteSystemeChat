@@ -10,7 +10,7 @@ Content-Type: application/json
 
 ### eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYxYWFmNzNhMjY2ZDkyMzNhZjE4ZjEiLCJ1c2VybmFtZSI6IjEyMyIsImlhdCI6MTcxMDMzNjc1OSwiZXhwIjoxNzEwNDIzMTU5fQ.v55KJsbwICvY2kg6o1R3hYmyHnp4zZoX67a_yBlUN1I
 
-POST http://localhost:4000/api/login
+POST http://localhost/api/login
 Content-Type: application/json
 
 {
@@ -40,9 +40,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYwN
 
 ###
 
-GET http://localhost:4000/api/getGroups
+GET http://localhost/api/getGroups
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYwN2QzMjQ2ZGM5N2NhMjNhOGQzMTMiLCJ1c2VybmFtZSI6Ik1zZ1Rlc3QiLCJpYXQiOjE3MTAyNjE1OTMsImV4cCI6MTcxMDM0Nzk5M30.ggl_zLHne38byoj3H7ilgfbw0CWu24lIME4sP2LP4To
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYwN2QzMjQ2ZGM5N2NhMjNhOGQzMTMiLCJ1c2VybmFtZSI6Ik1zZ1Rlc3QiLCJpYXQiOjE3MTEzOTAwODUsImV4cCI6MTcxMTQ3NjQ4NX0.5P6CXS12waxP7hCUmPDRxtQxpjBn9z0vd14OX-1AkY0
 
 ###
 GET http://localhost:4000/api/groups/65f1b3a53a266d9233af18ff/messages
