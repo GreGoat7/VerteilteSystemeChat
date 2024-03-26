@@ -18,7 +18,7 @@ const useGroups = (groups, setGroups) => {
   const fetchGroups = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:4000/api/getGroups", {
+      const response = await axios.get("http://localhost/api/getGroups", {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -38,7 +38,7 @@ const useGroups = (groups, setGroups) => {
     try {
       console.log("1");
       const response = await axios.post(
-        "http://localhost:4000/api/createGroup",
+        "http://localhost/api/createGroup",
         { groupName },
         {
           headers: {
@@ -60,7 +60,7 @@ const useGroups = (groups, setGroups) => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/directChat",
+        "http://localhost/api/directChat",
         { partnerId },
         {
           headers: {

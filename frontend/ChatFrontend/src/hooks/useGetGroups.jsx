@@ -11,15 +11,12 @@ const useGetGroups = () => {
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:4000/api/getGroups",
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axios.get("http://localhost/api/getGroups", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setGroups(response.data);
       } catch (err) {
         setError(err);
