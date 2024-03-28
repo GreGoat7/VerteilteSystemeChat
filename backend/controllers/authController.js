@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
+const Group = require("../models/Group");
 const jwt = require("jsonwebtoken");
+const rabbitMQManager = require("../rabbit/rabbitmq"); // Pfad zu deinem RabbitMQ-Modul
 
 exports.register = async (req, res) => {
   try {
@@ -46,6 +48,15 @@ exports.login = async (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: "24h" }
       );
+
+      // Filtere Gruppen, in denen der Benutzer Mitglied ist
+      const groups = await Group.find({ members: user._id });
+
+      // Erstelle Queues für jede Gruppe
+      for (const group of groups) {
+        await rabbitMQManager.createQueueForGroup(group._id.toString());
+      }
+
       res.json({ userId: user._id, username: user.username, token }); // Token anstelle von "Success" senden
     } else {
       res.send("Wrong username or password");

@@ -4,6 +4,15 @@ const User = require("../models/User"); // Stellen Sie sicher, dass Sie das User
 
 const connectedUsers = new Map();
 
+async function sendMessageToQueue(msgObj) {
+  const channel = await amqpConn.createChannel();
+  const queueName = `group_${msgObj.groupId}`;
+
+  await channel.assertQueue(queueName, { durable: true });
+  channel.sendToQueue(queueName, Buffer.from(JSON.stringify(msgObj)));
+  console.log(`Nachricht an Queue ${queueName} gesendet`);
+}
+
 module.exports = function (wss) {
   wss.on("connection", function connection(ws) {
     console.log("Ein neuer Client ist verbunden");
