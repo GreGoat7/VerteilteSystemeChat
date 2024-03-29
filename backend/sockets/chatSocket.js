@@ -1,22 +1,14 @@
 const WebSocket = require("ws");
 const Message = require("../models/Message");
 const User = require("../models/User"); // Stellen Sie sicher, dass Sie das User-Modell importieren
+const rabbitMQManager = require("../rabbit/rabbitmq"); // Pfad zu deinem RabbitMQ-Modul
 
 const connectedUsers = new Map();
-
-async function sendMessageToQueue(msgObj) {
-  const channel = await amqpConn.createChannel();
-  const queueName = `group_${msgObj.groupId}`;
-
-  await channel.assertQueue(queueName, { durable: true });
-  channel.sendToQueue(queueName, Buffer.from(JSON.stringify(msgObj)));
-  console.log(`Nachricht an Queue ${queueName} gesendet`);
-}
 
 module.exports = function (wss) {
   wss.on("connection", function connection(ws) {
     console.log("Ein neuer Client ist verbunden");
-
+    // hier das console.log für token und iserid oder nicht?
     const userId = generateUserId(); // Funktion, um eine eindeutige ID für jeden verbundenen Client zu generieren
     connectedUsers.set(userId, ws);
 
@@ -25,27 +17,37 @@ module.exports = function (wss) {
 
       const msgObj = JSON.parse(data);
 
-      try {
-        // Annahme: msgObj enthält { message, senderId, groupId(optional) }
-        const message = new Message({
-          content: msgObj.content,
-          senderName: msgObj.senderName,
-          senderId: msgObj.senderId,
-          senderTimestamp: msgObj.senderTimestamp,
-          groupId: msgObj.groupId,
-        });
+      // Prüfe, ob es sich um eine Initialisierungsnachricht handelt
+      if (msgObj.type === "init") {
+        console.log(
+          `Initialisierungsnachricht von userId: ${msgObj.userId} mit Token: ${msgObj.token}`
+        );
+        await rabbitMQManager.subscribeUserToQueues(msgObj.userId, ws);
+      } else {
+        // Verarbeite andere Nachrichten wie bisher
+        try {
+          const message = new Message({
+            content: msgObj.content,
+            senderName: msgObj.senderName,
+            senderId: msgObj.senderId,
+            senderTimestamp: msgObj.senderTimestamp,
+            groupId: msgObj.groupId,
+          });
 
-        await message.save();
-        console.log("Nachricht gespeichert");
+          await message.save();
+          console.log("Nachricht gespeichert");
 
-        // Sende Nachricht an alle verbundenen Clients
-        connectedUsers.forEach((clientWs, clientId) => {
-          if (clientWs.readyState === WebSocket.OPEN) {
-            clientWs.send(JSON.stringify(msgObj));
-          }
-        });
-      } catch (err) {
-        console.error("Fehler beim Speichern der Nachricht:", err);
+          rabbitMQManager.sendQueueMessage(`group_${msgObj.groupId}`, msgObj);
+
+          // Sende Nachricht an alle verbundenen Clients
+          connectedUsers.forEach((clientWs, clientId) => {
+            if (clientWs.readyState === WebSocket.OPEN) {
+              clientWs.send(JSON.stringify(msgObj));
+            }
+          });
+        } catch (err) {
+          console.error("Fehler beim Speichern der Nachricht:", err);
+        }
       }
     });
 

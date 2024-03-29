@@ -52,7 +52,7 @@ exports.login = async (req, res) => {
       // Filtere Gruppen, in denen der Benutzer Mitglied ist
       const groups = await Group.find({ members: user._id });
 
-      // Erstelle Queues für jede Gruppe
+      // Erstelle Queues für jede Gruppe, in der der Benutzer Mitglied ist
       for (const group of groups) {
         await rabbitMQManager.createQueueForGroup(group._id.toString());
       }
