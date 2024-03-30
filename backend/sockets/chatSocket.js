@@ -22,7 +22,7 @@ module.exports = function (wss) {
         console.log(
           `Initialisierungsnachricht von userId: ${msgObj.userId} mit Token: ${msgObj.token}`
         );
-        await rabbitMQManager.subscribeUserToQueues(msgObj.userId, ws);
+        await rabbitMQManager.subscribeUserToFanout(msgObj.userId, ws);
       } else {
         // Verarbeite andere Nachrichten wie bisher
         try {
@@ -37,7 +37,10 @@ module.exports = function (wss) {
           await message.save();
           console.log("Nachricht gespeichert");
 
-          rabbitMQManager.sendQueueMessage(`group_${msgObj.groupId}`, msgObj);
+          rabbitMQManager.publishToFanoutExchange(
+            `group_${msgObj.groupId.toString()}_fanout`,
+            msgObj
+          );
 
           // Sende Nachricht an alle verbundenen Clients
           connectedUsers.forEach((clientWs, clientId) => {

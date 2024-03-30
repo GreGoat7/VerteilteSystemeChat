@@ -31,55 +31,71 @@ async function start() {
 }
 
 // Queue für eine spezifische Gruppe und eine zugehörige Status-Update-Queue erstellen
-async function createQueueForGroup(groupId) {
+async function createFanoutForGroup(userId) {
   // Haupt-Queue für Nachrichten
-  const messageQueue = `group_${groupId}`;
-  await channel.assertQueue(messageQueue, { durable: true });
-  console.log(`Queue für Nachrichten erstellt: ${messageQueue}`);
+  const userGroups = await Group.find({ members: userId });
+  userGroups.forEach(async (group) => {
+    const messageQueue = `group_${group._id.toString()}_fanout`;
+    await channel.assertExchange(messageQueue, "fanout", { durable: true });
+    console.log(`Fanout für Nachrichten erstellt: ${messageQueue}`);
 
-  // Queue für Status-Updates
-  const statusUpdateQueue = `group_${groupId}_status`;
-  await channel.assertQueue(statusUpdateQueue, { durable: true });
-  console.log(`Queue für Status-Updates erstellt: ${statusUpdateQueue}`);
+    // Queue für Status-Updates
+    const statusUpdateQueue = `group_${group._id.toString}_fanoutStatus`;
+    await channel.assertExchange(statusUpdateQueue, "fanout", {
+      durable: true,
+    });
+    console.log(`Queue für Status-Updates erstellt: ${statusUpdateQueue}`);
+  });
 }
 
-async function sendQueueMessage(queueName, messageContent) {
+async function publishToFanoutExchange(exchangeName, messageContent) {
   try {
-    // Prüfe, ob die Queue existiert (dies ist eher symbolisch, da assertQueue sie erstellt, wenn sie nicht existiert)
-    await channel.assertQueue(queueName, { durable: true });
-    await channel.sendToQueue(
-      queueName,
-      Buffer.from(JSON.stringify(messageContent)),
+    // Stelle sicher, dass der Exchange existiert
+    await channel.assertExchange(exchangeName, "fanout", { durable: true });
+
+    // Veröffentliche die Nachricht an den Fanout-Exchange
+    channel.publish(
+      exchangeName, // Name des Exchanges
+      "", // Routing-Key (wird bei Fanout ignoriert)
+      Buffer.from(JSON.stringify(messageContent)), // Die Nachricht
       {
-        persistent: true,
+        persistent: true, // Nachrichten als persistent markieren
       }
     );
-    console.log(`Nachricht gesendet an Queue ${queueName}:`, messageContent);
+    console.log(
+      `Nachricht veröffentlicht an Fanout-Exchange ${exchangeName}:`,
+      messageContent
+    );
   } catch (error) {
-    console.error(`Fehler beim Senden an Queue ${queueName}:`, error);
+    console.error(
+      `Fehler beim Veröffentlichen an Fanout-Exchange ${exchangeName}:`,
+      error
+    );
   }
 }
 
 const Group = require("../models/Group"); // Stellen Sie sicher, dass Sie das Group-Modell importieren
 
-// Methode zum Abonnieren der Benutzer zu ihren relevanten Queues
-async function subscribeUserToQueues(userId, ws) {
+// Methode zum Abonnieren der Benutzer zu ihren relevanten Fanout Exchanges
+async function subscribeUserToFanout(userId, ws) {
   try {
     const userGroups = await Group.find({ members: userId });
 
     userGroups.forEach(async (group) => {
-      const queueName = `group_${group._id.toString()}`;
+      const exchangeName = `group_${group._id.toString()}_fanout`;
+      const userQueueName = `queue_for_${userId.toString()}_in_${group._id.toString()}`; // Eine einzigartige Queue für den Nutzer in dieser Gruppe
 
-      // Stellen Sie sicher, dass die Queue existiert
-      await channel.assertQueue(queueName, { durable: true });
+      // Stellen Sie sicher, dass die Queue existiert und binden sie an den Exchange
+      await channel.assertQueue(userQueueName, { durable: true });
+      await channel.bindQueue(userQueueName, exchangeName, "");
 
       // Konsumiere Nachrichten aus der Queue
       channel.consume(
-        queueName,
+        userQueueName,
         (msg) => {
           if (msg !== null) {
             console.log(
-              `Nachricht empfangen aus Queue ${queueName}: ${msg.content.toString()}`
+              `Nachricht empfangen aus Queue ${userQueueName}: ${msg.content.toString()}`
             );
             // Nachricht an den WebSocket-Client senden
             if (ws.readyState === WebSocket.OPEN) {
@@ -93,11 +109,13 @@ async function subscribeUserToQueues(userId, ws) {
         }
       );
 
-      console.log(`Abonniert Queue: ${queueName} für userId: ${userId}`);
+      console.log(
+        `Abonniert Exchange: ${exchangeName} für Queue: ${userQueueName} und userId: ${userId}`
+      );
     });
   } catch (error) {
     console.error(
-      `Fehler beim Abonnieren der Queues für userId: ${userId}`,
+      `Fehler beim Abonnieren der Fanout Exchanges für userId: ${userId}`,
       error
     );
   }
@@ -105,14 +123,7 @@ async function subscribeUserToQueues(userId, ws) {
 
 module.exports = {
   start,
-  createQueueForGroup,
-  sendQueueMessage,
-  subscribeUserToQueues,
-};
-
-module.exports = {
-  start,
-  createQueueForGroup,
-  sendQueueMessage,
-  subscribeUserToQueues,
+  createFanoutForGroup,
+  publishToFanoutExchange,
+  subscribeUserToFanout,
 };

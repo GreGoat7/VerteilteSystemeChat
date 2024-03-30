@@ -49,13 +49,7 @@ exports.login = async (req, res) => {
         { expiresIn: "24h" }
       );
 
-      // Filtere Gruppen, in denen der Benutzer Mitglied ist
-      const groups = await Group.find({ members: user._id });
-
-      // Erstelle Queues für jede Gruppe, in der der Benutzer Mitglied ist
-      for (const group of groups) {
-        await rabbitMQManager.createQueueForGroup(group._id.toString());
-      }
+      await rabbitMQManager.createFanoutForGroup(user._id); // Fanout für alle Gruppen des Users erstellen
 
       res.json({ userId: user._id, username: user.username, token }); // Token anstelle von "Success" senden
     } else {
