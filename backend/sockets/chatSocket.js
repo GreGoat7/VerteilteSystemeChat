@@ -2,6 +2,7 @@ const WebSocket = require("ws");
 const Message = require("../models/Message");
 const User = require("../models/User"); // Stellen Sie sicher, dass Sie das User-Modell importieren
 const rabbitMQManager = require("../rabbit/rabbitmq"); // Pfad zu deinem RabbitMQ-Modul
+const { v4: uuidv4 } = require("uuid");
 
 const connectedUsers = new Map();
 
@@ -34,23 +35,33 @@ module.exports = function (wss) {
             groupId: msgObj.groupId,
           });
 
+          // Beim Senden einer Nachricht
+          const messageContent = {
+            content: msgObj.content,
+            senderName: msgObj.senderName,
+            senderId: msgObj.senderId,
+            senderTimestamp: msgObj.senderTimestamp,
+            groupId: msgObj.groupId,
+            messageId: uuidv4(), // Generiere eine eindeutige Nachrichten-ID
+          };
+
           await message.save();
           console.log("Nachricht gespeichert");
 
           rabbitMQManager.publishToFanoutExchange(
             `group_${msgObj.groupId.toString()}_fanout`,
-            msgObj
+            messageContent
           );
 
           // Sende Nachricht an alle verbundenen Clients außer dem Sender
-          connectedUsers.forEach((clientWs, clientId) => {
+          /*connectedUsers.forEach((clientWs, clientId) => {
             if (
               clientWs.readyState === WebSocket.OPEN &&
               clientId !== msgObj.senderId
             ) {
               clientWs.send(JSON.stringify(msgObj));
             }
-          });
+          }); */
         } catch (err) {
           console.error("Fehler beim Speichern der Nachricht:", err);
           S;
@@ -65,7 +76,3 @@ module.exports = function (wss) {
     });
   });
 };
-
-function generateUserId() {
-  return Math.random().toString(36).substr(2, 9);
-}
