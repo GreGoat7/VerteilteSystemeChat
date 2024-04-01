@@ -80,10 +80,13 @@ const Group = require("../models/Group"); // Stellen Sie sicher, dass Sie das Gr
 async function subscribeUserToFanout(userId, ws) {
   try {
     const userGroups = await Group.find({ members: userId });
+    const userQueueNames = [];
 
     userGroups.forEach(async (group) => {
       const exchangeName = `group_${group._id.toString()}_fanout`;
-      const userQueueName = `queue_for_${userId.toString()}_in_${group._id.toString()}`; // Eine einzigartige Queue für den Nutzer in dieser Gruppe
+      const userQueueName = `queue_for_${new Date().getTime()}_${userId.toString()}_in_${group._id.toString()}`; // Erzeugt eine einzigartige Queue für diese WebSocket-Verbindung
+
+      userQueueNames.push(userQueueName);
 
       // Stellen Sie sicher, dass die Queue existiert und binden sie an den Exchange
       await channel.assertQueue(userQueueName, { durable: true });
@@ -112,6 +115,21 @@ async function subscribeUserToFanout(userId, ws) {
       console.log(
         `Abonniert Exchange: ${exchangeName} für Queue: ${userQueueName} und userId: ${userId}`
       );
+    });
+
+    // Listener für das Schließen der WebSocket-Verbindung
+    ws.on("close", async () => {
+      console.log(`WebSocket-Verbindung geschlossen für User ${userId}`);
+      userGroups.forEach;
+      for (const queueName of userQueueNames) {
+        userGroups.forEach(async (group) => {
+          const exchangeName = `group_${group._id.toString()}_fanout`;
+          await channel.unbindQueue(queueName, exchangeName, "");
+          console.log(`Queue ${queueName} entbunden.`);
+        });
+        await channel.deleteQueue(queueName);
+        console.log(`Queue ${queueName} gelöscht und entbunden.`);
+      }
     });
   } catch (error) {
     console.error(

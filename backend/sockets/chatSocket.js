@@ -9,8 +9,6 @@ module.exports = function (wss) {
   wss.on("connection", function connection(ws) {
     console.log("Ein neuer Client ist verbunden");
     // hier das console.log für token und iserid oder nicht?
-    const userId = generateUserId(); // Funktion, um eine eindeutige ID für jeden verbundenen Client zu generieren
-    connectedUsers.set(userId, ws);
 
     ws.on("message", async function incoming(data) {
       console.log("Nachricht erhalten:", data);
@@ -22,6 +20,8 @@ module.exports = function (wss) {
         console.log(
           `Initialisierungsnachricht von userId: ${msgObj.userId} mit Token: ${msgObj.token}`
         );
+        ws.userId = msgObj.userId;
+        connectedUsers.set(msgObj.userId, ws);
         await rabbitMQManager.subscribeUserToFanout(msgObj.userId, ws);
       } else {
         // Verarbeite andere Nachrichten wie bisher
@@ -42,21 +42,26 @@ module.exports = function (wss) {
             msgObj
           );
 
-          // Sende Nachricht an alle verbundenen Clients
+          // Sende Nachricht an alle verbundenen Clients außer dem Sender
           connectedUsers.forEach((clientWs, clientId) => {
-            if (clientWs.readyState === WebSocket.OPEN) {
+            if (
+              clientWs.readyState === WebSocket.OPEN &&
+              clientId !== msgObj.senderId
+            ) {
               clientWs.send(JSON.stringify(msgObj));
             }
           });
         } catch (err) {
           console.error("Fehler beim Speichern der Nachricht:", err);
+          S;
         }
       }
     });
 
     ws.on("close", function close() {
-      console.log("Ein Client hat die Verbindung getrennt");
-      connectedUsers.delete(userId);
+      console.log("Ein Client hat die Verbindung getrennt:", ws.userId);
+
+      connectedUsers.delete(ws.userId);
     });
   });
 };
