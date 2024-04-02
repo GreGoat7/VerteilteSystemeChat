@@ -5,6 +5,7 @@ import Nav from "./NavGroups";
 import "./Css/Chat.css";
 import useGroups from "../hooks/useGroups";
 import useGetMessages from "../hooks/useGetMessages";
+import { v4 as uuidv4 } from "uuid";
 
 function Chat({}) {
   const { username, userId, token, isLoggedIn } = useAuth();
@@ -36,6 +37,7 @@ function Chat({}) {
         content: message,
         groupId: activeGroupId,
         senderTimestamp: Date.now(),
+        messageId: uuidv4(),
       }); // Anpassung für die korrekte Benennung und Werte
       setMessage("");
     }
@@ -56,7 +58,8 @@ function Chat({}) {
             <ul>
               {activeChat?.map((msgObj, index) => (
                 <li key={index}>
-                  {msgObj?.senderName}: {msgObj?.content}
+                  {msgObj?.senderName}: {msgObj?.content} -{" "}
+                  <i>{msgObj?.status || "nicht gesendet"}</i>
                 </li>
               ))}
             </ul>
