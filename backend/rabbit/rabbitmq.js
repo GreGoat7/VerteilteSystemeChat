@@ -70,22 +70,22 @@ async function publishToFanoutExchange(exchangeName, messageContent, ws) {
       messageContent
     );
     // speichere das update in der datenbank mit dem status gesendet und der uuid als identifier
-    const updatedMessage = await Message.findOneAndUpdate(
+    /*const updatedMessage = await Message.findOneAndUpdate(
       { messageId: messageContent.messageId },
       { status: "gesendet" },
       { new: true }
-    );
+    ); */
 
-    console.log(`Nachrichtenstatus aktualisiert: ${updatedMessage}`);
+    //console.log(`Nachrichtenstatus aktualisiert: ${updatedMessage}`);
     const statusUpdateMsg = JSON.stringify({
       type: "statusUpdate",
       messageId: messageContent.messageId, // Annahme: _id ist die eindeutige ID der Nachricht
-      status: updatedMessage.status,
+      status: "gesendet",
       // Fügen Sie hier zusätzliche Felder hinzu, falls erforderlich
     });
     // Bestätigungsnachricht an den Client senden, dass die Nachricht als "gesendet" markiert wurde
     if (ws.readyState === WebSocket.OPEN) {
-      console.log("status-update gesendet...", updatedMessage.status);
+      // console.log("status-update gesendet...", updatedMessage.status);
       console.log("status-update gesendet...", statusUpdateMsg);
       ws.send(statusUpdateMsg);
     }

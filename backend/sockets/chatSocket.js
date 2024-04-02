@@ -81,22 +81,7 @@ module.exports = function (wss) {
       } else {
         try {
           // Beim Senden einer Nachricht
-          const messageContent = {
-            content: msgObj.content,
-            senderName: msgObj.senderName,
-            senderId: msgObj.senderId,
-            senderTimestamp: msgObj.senderTimestamp,
-            groupId: msgObj.groupId,
-            status: "nicht gesendet",
-            messageId: msgObj.messageId,
-          };
-
-          rabbitMQManager.publishToFanoutExchange(
-            `group_${msgObj.groupId.toString()}_fanout`,
-            messageContent,
-            ws
-          );
-
+          console.log("nachricht empfangen: ", msgObj);
           const message = new Message({
             content: msgObj.content,
             senderName: msgObj.senderName,
@@ -109,6 +94,22 @@ module.exports = function (wss) {
 
           await message.save();
           console.log("Nachricht gespeichert");
+
+          const messageContent = {
+            content: msgObj.content,
+            senderName: msgObj.senderName,
+            senderId: msgObj.senderId,
+            senderTimestamp: msgObj.senderTimestamp,
+            groupId: msgObj.groupId,
+            status: "gesendet",
+            messageId: msgObj.messageId,
+          };
+
+          rabbitMQManager.publishToFanoutExchange(
+            `group_${msgObj.groupId.toString()}_fanout`,
+            messageContent,
+            ws
+          );
 
           // Sende Nachricht an alle verbundenen Clients außer dem Sender
           /*connectedUsers.forEach((clientWs, clientId) => {
