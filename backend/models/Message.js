@@ -16,6 +16,11 @@ const messageSchema = new mongoose.Schema({
   }, // Optional, für Gruppennachrichten
   senderTimestamp: { type: Date, required: true },
   timestamp: { type: Date, default: Date.now },
+  status: {
+    type: String,
+    enum: ["nicht gesendet", "gesendet", "empfangen"],
+    default: "nicht gesendet",
+  },
 });
 
 module.exports = mongoose.model("Message", messageSchema);

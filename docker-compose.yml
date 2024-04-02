@@ -9,10 +9,10 @@ services:
       - mongo_data:/data/db
 
   rabbitmq:
-    image: "rabbitmq:3-management"
+    image: "rabbitmq:3.8-management-alpine"
     ports:
-      - "15672:15672" # Management-Interface
-      - "5672:5672" # Standard RabbitMQ Port
+      - "15673:15672" # Management-Interface
+      - "5673:5672" # Standard RabbitMQ Port
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
@@ -20,7 +20,7 @@ services:
     build: ./backend
     environment:
       - MONGO_URI=mongodb://mongo:27017/chatdb
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - RABBITMQ_URL=amqp://rabbitmq:5672
       - JWT_SECRET="mySecretKey123!"
     depends_on:
       - mongo

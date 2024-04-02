@@ -1,7 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
+import { useAuth } from "../context/AuthContext";
 
 export const useSocket = (setMessages) => {
   const ws = useRef(null);
+  const { token, userId } = useAuth(); // Token und UserId aus dem Authentifizierungskontext abrufen
+  const receivedMessageIds = useRef(new Set()); // Referenz für die IDs der empfangenen Nachrichten
 
   useEffect(() => {
     // Initialisiere die WebSocket-Verbindung und weise sie ws.current zu
@@ -9,6 +12,17 @@ export const useSocket = (setMessages) => {
 
     ws.current.onopen = () => {
       console.log("WebSocket Verbindung hergestellt.");
+
+      // Sende eine Initialisierungsnachricht mit Benutzer-ID und Token
+      if (ws.current.readyState === WebSocket.OPEN) {
+        ws.current.send(
+          JSON.stringify({
+            type: "init",
+            userId: userId,
+            token: token,
+          })
+        );
+      }
     };
 
     ws.current.onmessage = (event) => {
@@ -31,7 +45,7 @@ export const useSocket = (setMessages) => {
         ws.current.close();
       }
     };
-  }, [setMessages]);
+  }, [setMessages, token, userId]);
 
   const sendMessage = (msgObj) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {

@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
+const Group = require("../models/Group");
 const jwt = require("jsonwebtoken");
+const rabbitMQManager = require("../rabbit/rabbitmq"); // Pfad zu deinem RabbitMQ-Modul
 
 exports.register = async (req, res) => {
   try {
@@ -46,6 +48,9 @@ exports.login = async (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: "24h" }
       );
+
+      await rabbitMQManager.createFanoutForGroup(user._id); // Fanout für alle Gruppen des Users erstellen
+
       res.json({ userId: user._id, username: user.username, token }); // Token anstelle von "Success" senden
     } else {
       res.send("Wrong username or password");

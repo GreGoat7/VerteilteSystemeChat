@@ -12,6 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "amqp": "^0.2.7",
+    "amqplib": "^0.10.3",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
@@ -20,6 +22,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.2.0",
     "socket.io": "^4.7.4",
+    "uuid": "^9.0.1",
     "ws": "^8.16.0"
   },
   "devDependencies": {
