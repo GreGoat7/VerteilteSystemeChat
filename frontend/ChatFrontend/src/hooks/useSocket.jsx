@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 export const useSocket = (setMessages) => {
   const ws = useRef(null);
   const { token, userId } = useAuth(); // Token und UserId aus dem Authentifizierungskontext abrufen
+  const receivedMessageIds = useRef(new Set()); // Referenz für die IDs der empfangenen Nachrichten
 
   useEffect(() => {
     // Initialisiere die WebSocket-Verbindung und weise sie ws.current zu
