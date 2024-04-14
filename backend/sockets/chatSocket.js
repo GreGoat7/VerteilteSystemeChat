@@ -10,6 +10,11 @@ module.exports = function (wss) {
   wss.on("connection", function connection(ws) {
     console.log("Ein neuer Client ist verbunden");
     // hier das console.log für token und iserid oder nicht?
+    const heartbeat = setInterval(() => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.ping(); // Sendet einen Ping vom Server zum Client
+      }
+    }, 10000); // 30 Sekunden
 
     ws.on("message", async function incoming(data) {
       console.log("Nachricht erhalten:", data);
@@ -24,33 +29,86 @@ module.exports = function (wss) {
         ws.userId = msgObj.userId;
         connectedUsers.set(msgObj.userId, ws);
         await rabbitMQManager.subscribeUserToFanout(msgObj.userId, ws);
+      } // Handhabung von Bestätigungsnachrichten
+      else if (msgObj.type === "confirmation") {
+        console.log(
+          `Bestätigungsnachricht empfangen für messageId: ${msgObj.messageId}`
+        );
+
+        console.log(
+          `Aktualisiere Nachricht mit messageId: ${msgObj.messageId} auf status: "empfangen"`
+        );
+
+        const updatedMessage = await Message.findOneAndUpdate(
+          { messageId: msgObj.messageId },
+          { status: "empfangen" },
+          { new: true }
+        );
+
+        if (updatedMessage) {
+          console.log(
+            "Nachricht erfolgreich aktualisiert in DB:",
+            updatedMessage
+          );
+        } else {
+          console.log("Keine Nachricht mit dieser messageId gefunden.");
+        }
+
+        // Prüfen, ob die Nachricht erfolgreich aktualisiert wurde
+        if (updatedMessage) {
+          console.log(`Nachricht empfangen in DB ${msgObj.messageId}`);
+
+          // Statusupdate an den Statusfanout senden
+          const statusUpdate = {
+            messageId: msgObj.messageId,
+            senderId: msgObj.senderId,
+            status: "empfangen",
+            receiverId: msgObj.receiverId,
+            groupId: msgObj.groupId,
+            type: "statusUpdate",
+          };
+
+          rabbitMQManager.publishToFanoutExchange(
+            `group_${msgObj.groupId.toString()}_fanoutStatus`,
+            statusUpdate,
+            ws
+          );
+        } else {
+          console.error(
+            `Fehler beim Aktualisieren des Nachrichtenstatus für messageId: ${msgObj.messageId}`
+          );
+        }
       } else {
-        // Verarbeite andere Nachrichten wie bisher
         try {
+          // Beim Senden einer Nachricht
+          console.log("nachricht empfangen: ", msgObj);
           const message = new Message({
             content: msgObj.content,
             senderName: msgObj.senderName,
             senderId: msgObj.senderId,
             senderTimestamp: msgObj.senderTimestamp,
             groupId: msgObj.groupId,
+            status: "nicht gesendet",
+            messageId: msgObj.messageId,
           });
 
-          // Beim Senden einer Nachricht
+          await message.save();
+          console.log("Nachricht gespeichert");
+
           const messageContent = {
             content: msgObj.content,
             senderName: msgObj.senderName,
             senderId: msgObj.senderId,
             senderTimestamp: msgObj.senderTimestamp,
             groupId: msgObj.groupId,
-            messageId: uuidv4(), // Generiere eine eindeutige Nachrichten-ID
+            status: "gesendet",
+            messageId: msgObj.messageId,
           };
-
-          await message.save();
-          console.log("Nachricht gespeichert");
 
           rabbitMQManager.publishToFanoutExchange(
             `group_${msgObj.groupId.toString()}_fanout`,
-            messageContent
+            messageContent,
+            ws
           );
 
           // Sende Nachricht an alle verbundenen Clients außer dem Sender
@@ -71,7 +129,7 @@ module.exports = function (wss) {
 
     ws.on("close", function close() {
       console.log("Ein Client hat die Verbindung getrennt:", ws.userId);
-
+      clearInterval(heartbeat);
       connectedUsers.delete(ws.userId);
     });
   });
