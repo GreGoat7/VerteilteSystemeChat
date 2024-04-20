@@ -24,6 +24,23 @@ nav {
   transition: width 0.1s ease;
 }
 
+.nav-info {
+  display: none;
+}
+nav:hover .nav-info {
+  display: flex; /* Use Flexbox */
+  background: #202225;
+  float: left;
+  height: 100%;
+  flex-direction: column; /* Stack one on top of another */
+  align-items: center; /* Align horizontally */
+  gap: 15px; /* Vertical gap between the links */
+  padding-top: 12px;
+  transition: width 0.1s ease;
+  width: 200px;
+  align-items: flex-start;
+}
+
 .nav-icons .list-container {
   display: flex;
   align-items: center;
@@ -39,8 +56,9 @@ nav:hover .info-container {
 }
 .info-container {
   display: none;
+  align-items: center; /* Vertically center the items */
   margin-left: 1rem;
-  flex-grow: 1; /* Lässt die Elemente den verfügbaren Platz ausfüllen */
+  height: 48px;
 }
 .list-container {
   display: flex;
@@ -59,6 +77,12 @@ nav a {
   transition: border-radius 250ms, background 250ms;
 }
 
+nav a.add-member {
+  margin-left: 0.5rem;
+  height: 36px !important;
+  width: 36px !important;
+}
+
 nav hr {
   display: block;
   width: 32px;
@@ -68,6 +92,15 @@ nav hr {
   background: #36393f;
 }
 
+nav hr.info {
+  display: none;
+  margin-left: 1rem;
+  width: 100%;
+}
+
+nav:hover hr.info {
+  display: block;
+}
 nav a:hover,
 nav a.active {
   border-radius: 25%;

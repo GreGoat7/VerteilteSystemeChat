@@ -24,6 +24,7 @@ const useGroups = (groups, setGroups) => {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log("hiii", response);
       setGroups(response.data);
       setLoading(false);
     } catch (err) {

@@ -47,7 +47,7 @@ function AuthForm() {
   };
 
   return (
-    <Box shadow="md" p={6} rounded="md" bg="white">
+    <Box shadow="md" p={6} rounded="md" bg="lightgrey">
       <Tabs isFitted variant="enclosed">
         <TabList mb="1em">
           <Tab>Login</Tab>

@@ -18,9 +18,6 @@ function Login({}) {
 
       if (response.data.token) {
         // Stellen Sie sicher, dass der Token vorhanden ist
-        console.log("token from login is", response);
-        console.log("username from login is", response.data.username);
-        console.log("userId from login is", response.data.userId);
         login(
           response.data.username,
           response.data.userId,
