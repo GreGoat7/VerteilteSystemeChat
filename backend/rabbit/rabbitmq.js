@@ -170,9 +170,18 @@ async function subscribeUserToFanout(userId, ws) {
       userGroups.forEach;
       for (const queueName of userQueueNames) {
         userGroups.forEach(async (group) => {
+          // Entbinden der Queues von dem Fanout-Exchange für Nachrichten
           const exchangeName = `group_${group._id.toString()}_fanout`;
           await channel.unbindQueue(queueName, exchangeName, "");
           console.log(`Queue ${queueName} entbunden.`);
+          // Entbinden der Queues von dem Fanout-Exchange für Status-Updates
+          const statusExchangeName = `group_${group._id.toString()}_fanoutStatus`;
+          await channel.unbindQueue(
+            `${queueName}_status`,
+            statusExchangeName,
+            ""
+          );
+          console.log(`Queue ${queueName}_status entbunden.`);
         });
         await channel.deleteQueue(queueName);
         console.log(`Queue ${queueName} gelöscht und entbunden.`);
