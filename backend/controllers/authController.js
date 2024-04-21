@@ -60,3 +60,27 @@ exports.login = async (req, res) => {
     res.status(500).send();
   }
 };
+
+exports.authenticate = (req, res) => {
+  res.json({
+    message: "Authenticated successfully",
+    userId: req.userId,
+    username: req.username, // Send the username to the frontend
+  });
+};
+
+exports.googleOAuthCallback = async (req, res) => {
+  // Nutzer ist bereits durch Passport authentifiziert und in req.user verfügbar
+  const token = jwt.sign(
+    { userId: req.user._id, username: req.user.username },
+    process.env.JWT_SECRET,
+    { expiresIn: "24h" }
+  );
+
+  await rabbitMQManager.createFanoutForGroup(req.user._id); // Fanout für alle Gruppen des Users erstellen
+
+  // Du könntest hier eine Umleitung zur Hauptseite deiner Anwendung setzen
+  res.redirect(
+    `http://localhost:5173?token=${token}&username=${req.user.username}&userId=${req.user._id}`
+  );
+};

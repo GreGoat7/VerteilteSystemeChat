@@ -1,7 +1,7 @@
 import React from "react";
 import { Flex, Avatar, AvatarBadge, Text, Tooltip } from "@chakra-ui/react";
 
-const Header = ({ chatName }) => {
+const HeaderChat = ({ chatName }) => {
   return (
     <Flex w="100%">
       <Avatar name={chatName} bg="blue.300">
@@ -16,4 +16,4 @@ const Header = ({ chatName }) => {
   );
 };
 
-export default Header;
+export default HeaderChat;
