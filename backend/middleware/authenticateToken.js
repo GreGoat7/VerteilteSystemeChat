@@ -15,7 +15,7 @@ const authenticateToken = (req, res, next) => {
 
     // Extrahieren der User-ID aus dem Payload des Tokens
     req.userId = user.userId;
-
+    req.username = user.username;
     next(); // Weiter zum nächsten Middleware/Route Handler
   });
 };
