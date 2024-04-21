@@ -1,6 +1,6 @@
 const Group = require("../models/Group");
 const Message = require("../models/Message");
-
+const User = require("../models/User");
 exports.createGroup = async (req, res) => {
   const groupName = req.body.groupName;
   const userId = req.userId;
@@ -74,9 +74,30 @@ exports.getUserGroups = async (req, res) => {
 
     // Alle Gruppen finden, in denen der Benutzer ein Mitglied ist
     const userGroups = await Group.find({ members: userId });
+    const groupsWithPartnerNames = await Promise.all(
+      userGroups.map(async (group) => {
+        if (group.type === "direct") {
+          // Find the partner ID by filtering out the current user's ID
+          const partnerId = group.members.find(
+            (memberId) => memberId.toString() !== userId.toString()
+          );
 
-    // Gruppen an den Client senden
-    res.status(200).json(userGroups);
+          if (partnerId) {
+            // Fetch the partner's user details
+            const partnerUser = await User.findById(partnerId);
+
+            if (partnerUser) {
+              // Append the partner's name to the group object
+              return { ...group.toObject(), name: partnerUser.username };
+            }
+          }
+        }
+
+        return group.toObject(); // Return the group as is if not a direct chat or no partner found
+      })
+    );
+    // Send the modified groups to the client
+    res.status(200).json(groupsWithPartnerNames);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Fehler beim Abrufen der Gruppen" });

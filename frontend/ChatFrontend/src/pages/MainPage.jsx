@@ -4,10 +4,26 @@ import Chat from "./../components/Chat";
 import Chattest from "./../test/Chattest";
 import LoginRegister from "./../components/LoginRegister";
 import Header from "../components/Header";
+import { Spinner } from "@chakra-ui/react";
 
 function MainPage() {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, loading } = useAuth();
 
+  if (loading) {
+    // Show loading feedback
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <Spinner size="xl" />
+      </div>
+    );
+  }
   return (
     <>
       <Header />

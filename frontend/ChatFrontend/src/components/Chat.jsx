@@ -42,28 +42,6 @@ function Chat({}) {
       }); // Anpassung für die korrekte Benennung und Werte
       setMessage("");
     }
-    // <div className="chat">
-    //     <div className="chat-box">
-    //       <h1>{activeGroup?.name}</h1>
-    //       <div id="chat-messages">
-    //         <ul>
-    //           {activeChat?.map((msgObj, index) => (
-    //             <li key={index}>
-    //               {msgObj?.senderName}: {msgObj?.content}
-    //             </li>
-    //           ))}
-    //         </ul>
-    //       </div>
-    //       <form onSubmit={handleSubmit}>
-    //         <input
-    //           value={message}
-    //           onChange={(e) => setMessage(e.target.value)}
-    //           placeholder="Nachricht eingeben"
-    //         />
-    //         <button type="submit">Senden</button>
-    //       </form>
-    //     </div>
-    //   </div>
   };
   return (
     <>

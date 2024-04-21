@@ -4,6 +4,7 @@ const http = require("http");
 const websocket = require("ws");
 const cors = require("cors");
 const connectDB = require("./database/database");
+const passport = require("./OAuth/passport");
 const chatSocket = require("./sockets/chatSocket");
 const rabbitMQManager = require("./rabbit/rabbitmq"); // Pfad zu deinem RabbitMQ-Modul
 
@@ -19,6 +20,7 @@ app.use(cors());
 // Statische Dateien servieren (wenn Sie eine Frontend-Build-Verzeichnis haben)
 app.use(express.static("public"));
 app.use(express.json());
+app.use(passport.initialize()); // Passport initialisieren
 app.use("/api", router);
 
 // Initialisiere RabbitMQ und WebSocket, sobald die Datenbankverbindung hergestellt ist

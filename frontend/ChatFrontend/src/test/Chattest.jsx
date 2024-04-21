@@ -21,9 +21,9 @@ const Chattest = () => {
   const {} = useGroups(groups, setGroups); // Annahme, dass dieser Hook die Gruppen und eine Funktion zum Setzen der Gruppen zurückgibt
 
   const { loading, error } = useGetMessages(activeGroupId, setMessages); // Annahme, dass
-  console.log("messages: ", messages);
-
-  const activeGroup = groups.find((group) => {
+  console.log("groupssssssss", groups);
+  const activeGroup = groups?.find((group) => {
+    console.log("asdfasdfasdfasdf", group);
     return group._id === activeGroupId;
   });
   console.log("activegoupr", activeGroup);

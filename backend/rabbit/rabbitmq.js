@@ -70,11 +70,11 @@ async function publishToFanoutExchange(exchangeName, messageContent, ws) {
       messageContent
     );
     // speichere das update in der datenbank mit dem status gesendet und der uuid als identifier
-    /*const updatedMessage = await Message.findOneAndUpdate(
+    const updatedMessage = await Message.findOneAndUpdate(
       { messageId: messageContent.messageId },
       { status: "gesendet" },
       { new: true }
-    ); */
+    );
 
     //console.log(`Nachrichtenstatus aktualisiert: ${updatedMessage}`);
     const statusUpdateMsg = JSON.stringify({
