@@ -53,7 +53,7 @@ exports.login = async (req, res) => {
 
       res.json({ userId: user._id, username: user.username, token }); // Token anstelle von "Success" senden
     } else {
-      res.send("Wrong username or password");
+      res.status(401).send("Wrong username or password");
     }
   } catch (err) {
     console.error(err);

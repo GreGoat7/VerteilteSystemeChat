@@ -35,7 +35,6 @@ export const useSocket = (setMessages) => {
     ws.current.onmessage = (event) => {
       const message = JSON.parse(event.data);
       if (message.type === "statusUpdate") {
-        console.log("hier angekommen:?", message);
         // Finde die Nachricht im State und aktualisiere ihren Status
         setMessages((prevMessages) =>
           prevMessages.map((msg) =>
@@ -61,7 +60,6 @@ export const useSocket = (setMessages) => {
           console.log("Bestätigungsnachricht senden:");
           ws.current.send(JSON.stringify(confirmation));
         }
-        console.log("hinter");
         setMessages((prevMessages) => [...prevMessages, message]);
       }
     };
