@@ -18,6 +18,7 @@ import {
   ModalBody,
   ModalCloseButton,
   Text,
+  Tooltip,
 } from "@chakra-ui/react";
 import useCreateGroup from "../hooks/useCreateGroup";
 import useGroups from "../hooks/useGroups";
@@ -71,8 +72,15 @@ function Nav({ groups, setGroups, activeGroupId, setActiveGroupId }) {
           .filter((group) => group.type === "group")
           .map((group) => (
             <Box className="info-container">
-              <Text color={"white"}>{group.name} </Text>
-              <AddMemberModal groupId={group._id} groupName={group.name} />
+              <Tooltip label={group.groupUsernames.join(", ")} placement="top">
+                <Text color={"white"}>{group.name}</Text>
+              </Tooltip>
+              <AddMemberModal
+                groupId={group._id}
+                groupName={group.name}
+                groupMembers={group.members}
+                setGroups={setGroups}
+              />
             </Box>
           ))}
       </Flex>
@@ -166,11 +174,13 @@ function CreateGroupModal({ setGroups }) {
     </>
   );
 }
-function UserSearchWithChakra({ setUserIdToAdd }) {
+function UserSearchWithChakra({ setUserIdToAdd, excludeUsers }) {
+  console.log("excludiyy", excludeUsers);
   const { users } = useGetUsers();
   const [userToAdd, setUserToAdd] = useState("");
   const { username } = useAuth();
   const filteredUsers = users
+    .filter((user) => !excludeUsers.includes(user._id)) // Exclude already added members
     .filter((user) => user.username !== username)
     .filter((user) =>
       user.username.toLowerCase().includes(userToAdd.toLowerCase())
@@ -210,7 +220,7 @@ function UserSearchWithChakra({ setUserIdToAdd }) {
   );
 }
 
-function AddMemberModal({ groupId, groupName }) {
+function AddMemberModal({ groupId, groupName, groupMembers, setGroups }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [userIdToAdd, setUserIdToAdd] = useState("");
   const { users, loading: usersLoading, error: usersError } = useGetUsers();
@@ -222,7 +232,32 @@ function AddMemberModal({ groupId, groupName }) {
   } = useAddGroupMember();
 
   const handleSave = async () => {
-    const newMember = await addGroupMember(groupId, userIdToAdd);
+    try {
+      const newMember = await addGroupMember(groupId, userIdToAdd);
+
+      if (userIdToAdd) {
+        setGroups((prevGroups) => {
+          return prevGroups.map((group) => {
+            if (group._id === groupId) {
+              // Assuming the backend returns the updated group data or just the userId that was added
+              // If the backend returns the updated group object
+              // return newMember; // If the newMember is the entire updated group object
+
+              // If the backend returns just the userId or similar minimal info
+              return {
+                ...group,
+                members: [...group.members, userIdToAdd], // Adding new userId to existing members array
+              };
+            } else {
+              return group; // Return all other groups unchanged
+            }
+          });
+        });
+      }
+    } catch (error) {
+      console.error("Error adding group member:", error);
+      // Optionally handle errors, e.g., by displaying a message to the user
+    }
   };
 
   return (
@@ -240,7 +275,10 @@ function AddMemberModal({ groupId, groupName }) {
             {addGroupMemberError && (
               <div>Error: {addGroupMemberError.message}</div>
             )}
-            <UserSearchWithChakra setUserIdToAdd={setUserIdToAdd} />
+            <UserSearchWithChakra
+              setUserIdToAdd={setUserIdToAdd}
+              excludeUsers={groupMembers}
+            />
           </ModalBody>
 
           <ModalFooter>
