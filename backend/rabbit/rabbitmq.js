@@ -7,7 +7,7 @@ const Message = require("../models/Message"); // Stellen Sie sicher, dass Sie da
 let amqpConn = null;
 let channel = null;
 
-async function connectToRabbitMQ(retryCount = 5) {
+async function connectToRabbitMQ(retryCount = 15) {
   try {
     amqpConn = await amqp.connect(process.env.RABBITMQ_URL, "heartbeat=60");
     channel = await amqpConn.createChannel(); // Channel beim Start einmal erstellen
@@ -69,19 +69,18 @@ async function publishToFanoutExchange(exchangeName, messageContent, ws) {
       `Nachricht veröffentlicht an Fanout-Exchange ${exchangeName}:`,
       messageContent
     );
-    // speichere das update in der datenbank mit dem status gesendet und der uuid als identifier
+
     const updatedMessage = await Message.findOneAndUpdate(
-      { messageId: messageContent.messageId },
-      { status: "gesendet" },
+      { messageId: messageContent.messageId, status: { $ne: "empfangen" } },
+      { $set: { status: "gesendet" } },
       { new: true }
     );
 
     //console.log(`Nachrichtenstatus aktualisiert: ${updatedMessage}`);
     const statusUpdateMsg = JSON.stringify({
       type: "statusUpdate",
-      messageId: messageContent.messageId, // Annahme: _id ist die eindeutige ID der Nachricht
+      messageId: messageContent.messageId,
       status: "gesendet",
-      // Fügen Sie hier zusätzliche Felder hinzu, falls erforderlich
     });
     // Bestätigungsnachricht an den Client senden, dass die Nachricht als "gesendet" markiert wurde
     if (ws.readyState === WebSocket.OPEN) {

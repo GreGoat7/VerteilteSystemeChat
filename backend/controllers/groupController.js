@@ -1,6 +1,8 @@
 const Group = require("../models/Group");
 const Message = require("../models/Message");
 const User = require("../models/User");
+const rabbitMQManager = require("../rabbit/rabbitmq");
+
 exports.createGroup = async (req, res) => {
   const groupName = req.body.groupName;
   const userId = req.userId;
@@ -142,5 +144,47 @@ exports.getGroupMessages = async (req, res) => {
     res
       .status(500)
       .json({ message: "Fehler beim Abrufen der Gruppennachrichten" });
+  }
+};
+
+exports.updateMessageStatusOnFetch = async (confirmations, ws) => {
+  for (const confirmation of confirmations) {
+    console.log("updated message", confirmation.content);
+    if (confirmation.status !== "empfangen") {
+      const updatedMessage = await Message.findByIdAndUpdate(
+        confirmation._id,
+        { status: "empfangen" },
+        { new: true }
+      );
+
+      console.log(
+        `Status der Nachricht ${confirmation.messageId} auf 'empfangen' aktualisiert.`
+      );
+
+      // Prüfen, ob die Nachricht erfolgreich aktualisiert wurde
+      if (updatedMessage) {
+        console.log(`Nachricht empfangen in DB ${confirmation.messageId}`);
+
+        // Statusupdate an den Statusfanout senden
+        const statusUpdate = {
+          messageId: confirmation.messageId,
+          senderId: confirmation.senderId,
+          status: "empfangen",
+          receiverId: confirmation.receiverId,
+          groupId: confirmation.groupId,
+          type: "statusUpdate",
+        };
+
+        rabbitMQManager.publishToFanoutExchange(
+          `group_${confirmation.groupId.toString()}_fanoutStatus`,
+          statusUpdate,
+          ws
+        );
+      } else {
+        console.error(
+          `Fehler beim Aktualisieren des Nachrichtenstatus für messageId: ${msgObj.messageId}`
+        );
+      }
+    }
   }
 };

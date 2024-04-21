@@ -88,5 +88,28 @@ export const useSocket = (setMessages) => {
     }
   };
 
-  return { sendMessage };
+  const sendConfirmations = (messages) => {
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      const confirmations = messages.map((message) => ({
+        content: message.content,
+        senderId: message.senderId,
+        messageId: message.messageId,
+        _id: message._id,
+        groupId: message.groupId,
+        receiverId: userId,
+      }));
+      console.log("sendConfirmations:", confirmations);
+
+      ws.current.send(
+        JSON.stringify({
+          type: "fetchConfirmations",
+          confirmations: confirmations,
+        })
+      );
+    } else {
+      console.error("WebSocket ist nicht geöffnet.");
+    }
+  };
+
+  return { sendMessage, sendConfirmations };
 };
