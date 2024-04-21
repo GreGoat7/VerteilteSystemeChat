@@ -122,16 +122,6 @@ module.exports = function (wss) {
             messageContent,
             ws
           );
-
-          // Sende Nachricht an alle verbundenen Clients außer dem Sender
-          /*connectedUsers.forEach((clientWs, clientId) => {
-            if (
-              clientWs.readyState === WebSocket.OPEN &&
-              clientId !== msgObj.senderId
-            ) {
-              clientWs.send(JSON.stringify(msgObj));
-            }
-          }); */
         } catch (err) {
           console.error("Fehler beim Speichern der Nachricht:", err);
           S;
