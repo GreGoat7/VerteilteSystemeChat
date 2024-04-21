@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { useSocket } from "../hooks/useSocket";
 
-const useGetMessages = (groupId, setMessages) => {
+const useGetMessages = (groupId, setMessages, sendConfirmations) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { token } = useAuth();
+  const { token, userId } = useAuth();
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -21,6 +22,15 @@ const useGetMessages = (groupId, setMessages) => {
         );
         console.log("response is", response);
         setMessages(response.data);
+
+        // Filter messages that need confirmation and send them in one go
+        const messagesNeedingConfirmation = response.data.filter(
+          (message) =>
+            message.senderId !== userId && message.status !== "empfangen"
+        );
+        console.log("messagesNeedingConfirmation", messagesNeedingConfirmation);
+
+        sendConfirmations(messagesNeedingConfirmation);
       } catch (err) {
         console.log(err);
         setError(err);
