@@ -93,9 +93,10 @@ export const useSocket = (setMessages) => {
   const sendConfirmations = (messages) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       const confirmations = messages.map((message) => ({
-        type: "fetchConfirmation",
+        content: message.content,
         senderId: message.senderId,
-        messageId: message._id,
+        messageId: message.messageId,
+        _id: message._id,
         groupId: message.groupId,
         receiverId: userId,
       }));
@@ -107,6 +108,8 @@ export const useSocket = (setMessages) => {
           confirmations: confirmations,
         })
       );
+    } else {
+      console.error("WebSocket ist nicht geöffnet.");
     }
   };
 

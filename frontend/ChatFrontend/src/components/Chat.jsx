@@ -13,10 +13,14 @@ function Chat({}) {
   const [groups, setGroups] = useState([]);
   const [message, setMessage] = useState("");
   const [activeGroupId, setActiveGroupId] = useState("");
-  const { sendMessage } = useSocket(setMessages);
+  const { sendMessage, sendConfirmations } = useSocket(setMessages);
   const {} = useGroups(groups, setGroups); // Annahme, dass dieser Hook die Gruppen und eine Funktion zum Setzen der Gruppen zurückgibt
 
-  const { loading, error } = useGetMessages(activeGroupId, setMessages); // Annahme, dass
+  const { loading, error } = useGetMessages(
+    activeGroupId,
+    setMessages,
+    sendConfirmations
+  );
   console.log("messages: ", messages);
 
   const activeGroup = groups.find((group) => {

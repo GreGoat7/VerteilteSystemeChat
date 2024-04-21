@@ -119,7 +119,7 @@ exports.updateMessageStatusOnFetch = async (confirmations, ws) => {
     console.log("updated message", confirmation.content);
     if (confirmation.status !== "empfangen") {
       const updatedMessage = await Message.findByIdAndUpdate(
-        confirmation.messageId,
+        confirmation._id,
         { status: "empfangen" },
         { new: true }
       );
@@ -128,20 +128,30 @@ exports.updateMessageStatusOnFetch = async (confirmations, ws) => {
         `Status der Nachricht ${confirmation.messageId} auf 'empfangen' aktualisiert.`
       );
 
-      const statusUpdate = {
-        type: "statusUpdate",
-        messageId: confirmation.messageId,
-        senderId: confirmation.senderId,
-        receiverId: confirmation.receiverId,
-        groupId: confirmation.groupId,
-        status: "empfangen",
-      };
+      // Prüfen, ob die Nachricht erfolgreich aktualisiert wurde
+      if (updatedMessage) {
+        console.log(`Nachricht empfangen in DB ${confirmation.messageId}`);
 
-      rabbitMQManager.publishToFanoutExchange(
-        `group_${confirmation.groupId.toString()}_fanoutStatus`,
-        statusUpdate,
-        ws
-      );
+        // Statusupdate an den Statusfanout senden
+        const statusUpdate = {
+          messageId: confirmation.messageId,
+          senderId: confirmation.senderId,
+          status: "empfangen",
+          receiverId: confirmation.receiverId,
+          groupId: confirmation.groupId,
+          type: "statusUpdate",
+        };
+
+        rabbitMQManager.publishToFanoutExchange(
+          `group_${confirmation.groupId.toString()}_fanoutStatus`,
+          statusUpdate,
+          ws
+        );
+      } else {
+        console.error(
+          `Fehler beim Aktualisieren des Nachrichtenstatus für messageId: ${msgObj.messageId}`
+        );
+      }
     }
   }
 };

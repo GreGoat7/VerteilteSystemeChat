@@ -3,11 +3,10 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../hooks/useSocket";
 
-const useGetMessages = (groupId, setMessages) => {
+const useGetMessages = (groupId, setMessages, sendConfirmations) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { token, userId } = useAuth();
-  const { sendConfirmations } = useSocket(setMessages);
 
   useEffect(() => {
     const fetchMessages = async () => {
