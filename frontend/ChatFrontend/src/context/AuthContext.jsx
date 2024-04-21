@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }) => {
         username,
         password,
       });
+      console.log("reponse", response);
       if (response.data.token) {
         setToken(response.data.token);
         setUsername(username);
@@ -36,6 +37,7 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Login-Fehler", error);
+      throw error;
     }
   };
 
