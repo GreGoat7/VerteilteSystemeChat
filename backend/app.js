@@ -7,7 +7,8 @@ const connectDB = require("./database/database");
 const passport = require("./OAuth/passport");
 const chatSocket = require("./sockets/chatSocket");
 const rabbitMQManager = require("./rabbit/rabbitmq"); // Pfad zu deinem RabbitMQ-Modul
-
+const expressSanitizer = require("express-sanitizer");
+const sanitizeInputs = require("./middleware/sanitizeRequest");
 // Datenbankverbindung herstellen
 connectDB();
 
@@ -20,7 +21,9 @@ app.use(cors());
 // Statische Dateien servieren (wenn Sie eine Frontend-Build-Verzeichnis haben)
 app.use(express.static("public"));
 app.use(express.json());
+app.use(expressSanitizer());
 app.use(passport.initialize()); // Passport initialisieren
+app.use(sanitizeInputs);
 app.use("/api", router);
 
 // Initialisiere RabbitMQ und WebSocket, sobald die Datenbankverbindung hergestellt ist

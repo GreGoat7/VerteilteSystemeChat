@@ -76,6 +76,7 @@ exports.getUserGroups = async (req, res) => {
     const userGroups = await Group.find({ members: userId });
     const groupsWithPartnerNames = await Promise.all(
       userGroups.map(async (group) => {
+        const groupObject = group.toObject();
         if (group.type === "direct") {
           // Find the partner ID by filtering out the current user's ID
           const partnerId = group.members.find(
@@ -88,12 +89,22 @@ exports.getUserGroups = async (req, res) => {
 
             if (partnerUser) {
               // Append the partner's name to the group object
-              return { ...group.toObject(), name: partnerUser.username };
+              return { ...groupObject, name: partnerUser.username };
             }
           }
+        } else if (group.type === "group") {
+          // Fetch usernames of all group members
+          const memberUsernames = await User.find({
+            _id: { $in: group.members },
+          }).select("username");
+
+          // Map over the returned users and extract usernames
+          groupObject.groupUsernames = memberUsernames.map(
+            (user) => user.username
+          );
         }
 
-        return group.toObject(); // Return the group as is if not a direct chat or no partner found
+        return groupObject; // Return the group as is if not a direct chat or no partner found
       })
     );
     // Send the modified groups to the client
