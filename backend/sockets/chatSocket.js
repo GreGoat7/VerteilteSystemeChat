@@ -2,6 +2,9 @@ const WebSocket = require("ws");
 const Message = require("../models/Message");
 const User = require("../models/User"); // Stellen Sie sicher, dass Sie das User-Modell importieren
 const rabbitMQManager = require("../rabbit/rabbitmq"); // Pfad zu deinem RabbitMQ-Modul
+const {
+  updateMessageStatusOnFetch,
+} = require("../controllers/groupController");
 const { v4: uuidv4 } = require("uuid");
 
 const connectedUsers = new Map();
@@ -78,6 +81,15 @@ module.exports = function (wss) {
             `Fehler beim Aktualisieren des Nachrichtenstatus für messageId: ${msgObj.messageId}`
           );
         }
+      } else if (msgObj.type === "fetchConfirmations") {
+        console.log("backend fetchConfirmations empfangen:");
+        console.log(
+          `Bestätigungen empfangen für Nachrichten: ${msgObj.confirmations
+            .map((c) => c.messageId)
+            .join(", ")}`
+        );
+        // Aufrufen der updateMessageStatusOnFetch Methode mit den passenden Nachrichten
+        await updateMessageStatusOnFetch(msgObj.confirmations, ws);
       } else {
         try {
           // Beim Senden einer Nachricht

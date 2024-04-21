@@ -1,5 +1,6 @@
 const Group = require("../models/Group");
 const Message = require("../models/Message");
+const rabbitMQManager = require("../rabbit/rabbitmq");
 
 exports.createGroup = async (req, res) => {
   const groupName = req.body.groupName;
@@ -110,5 +111,37 @@ exports.getGroupMessages = async (req, res) => {
     res
       .status(500)
       .json({ message: "Fehler beim Abrufen der Gruppennachrichten" });
+  }
+};
+
+exports.updateMessageStatusOnFetch = async (confirmations, ws) => {
+  for (const confirmation of confirmations) {
+    console.log("updated message", confirmation.content);
+    if (confirmation.status !== "empfangen") {
+      const updatedMessage = await Message.findByIdAndUpdate(
+        confirmation.messageId,
+        { status: "empfangen" },
+        { new: true }
+      );
+
+      console.log(
+        `Status der Nachricht ${confirmation.messageId} auf 'empfangen' aktualisiert.`
+      );
+
+      const statusUpdate = {
+        type: "statusUpdate",
+        messageId: confirmation.messageId,
+        senderId: confirmation.senderId,
+        receiverId: confirmation.receiverId,
+        groupId: confirmation.groupId,
+        status: "empfangen",
+      };
+
+      rabbitMQManager.publishToFanoutExchange(
+        `group_${confirmation.groupId.toString()}_fanoutStatus`,
+        statusUpdate,
+        ws
+      );
+    }
   }
 };
