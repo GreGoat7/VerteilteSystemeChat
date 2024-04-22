@@ -72,7 +72,10 @@ function Nav({ groups, setGroups, activeGroupId, setActiveGroupId }) {
           .filter((group) => group.type === "group")
           .map((group) => (
             <Box className="info-container">
-              <Tooltip label={group.groupUsernames.join(", ")} placement="top">
+              <Tooltip
+                label={group?.groupUsernames?.join(", ")}
+                placement="top"
+              >
                 <Text color={"white"}>{group.name}</Text>
               </Tooltip>
               <AddMemberModal

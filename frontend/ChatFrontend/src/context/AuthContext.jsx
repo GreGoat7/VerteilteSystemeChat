@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [userId, setUserId] = useState(null);
   const [token, setToken] = useState(null); // Hinzufügen des Tokens
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loading, setLoading] = useState(true); // Loading state added
+  const [loading, setLoading] = useState(false); // Loading state added
 
   const googleLogin = () => {
     window.location.href = "http://localhost/api/auth/google";
@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const validateToken = async () => {
       const token = localStorage.getItem("token");
-      setLoading(true);
+      setLoading(false);
       if (token) {
         try {
           // Send a request to your backend to validate the token

@@ -1,10 +1,10 @@
 import React from "react";
 import { Flex, Text, Box, IconButton, useColorMode } from "@chakra-ui/react";
-import { MoonIcon, SunIcon } from "@chakra-ui/icons";
+import { ArrowRightIcon, SunIcon } from "@chakra-ui/icons";
 import { useAuth } from "../context/AuthContext";
 function Header() {
   const { colorMode, toggleColorMode } = useColorMode();
-  const { logout } = useAuth();
+  const { logout, isLoggedIn, username } = useAuth();
   return (
     <Flex
       as="header"
@@ -17,13 +17,20 @@ function Header() {
       <Text fontSize="lg" fontWeight="bold" color={"white"}>
         Meine Webseite
       </Text>
-      <Box>
-        <IconButton
-          icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-          onClick={logout}
-          variant="ghost"
-        />
-      </Box>
+      <Flex>
+        <Text paddingTop="9px" paddingRight="10px">
+          {username}
+        </Text>
+        {isLoggedIn ? (
+          <IconButton
+            icon={<ArrowRightIcon />}
+            onClick={logout}
+            variant="ghost"
+          />
+        ) : (
+          <></>
+        )}
+      </Flex>
     </Flex>
   );
 }
