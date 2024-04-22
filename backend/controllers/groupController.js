@@ -26,6 +26,8 @@ exports.createGroup = async (req, res) => {
 
     await newGroup.save();
 
+    await rabbitMQManager.createFanoutForGroup(userId.toString());
+
     res
       .status(201)
       .json({ message: "Gruppe erfolgreich erstellt", group: newGroup });
