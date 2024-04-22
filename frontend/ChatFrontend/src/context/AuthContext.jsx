@@ -51,6 +51,7 @@ export const AuthProvider = ({ children }) => {
       console.log("Registrierung erfolgreich", response.data);
     } catch (error) {
       console.error("Registrierungsfehler", error);
+      throw error;
     }
   };
   useEffect(() => {

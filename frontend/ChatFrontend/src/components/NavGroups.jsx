@@ -183,7 +183,7 @@ function UserSearchWithChakra({ setUserIdToAdd, excludeUsers }) {
   const [userToAdd, setUserToAdd] = useState("");
   const { username } = useAuth();
   const filteredUsers = users
-    .filter((user) => !excludeUsers.includes(user._id)) // Exclude already added members
+    .filter((user) => !excludeUsers?.includes(user._id)) // Exclude already added members
     .filter((user) => user.username !== username)
     .filter((user) =>
       user.username.toLowerCase().includes(userToAdd.toLowerCase())

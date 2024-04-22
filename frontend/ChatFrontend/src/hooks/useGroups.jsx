@@ -11,10 +11,6 @@ const useGroups = (groups, setGroups) => {
     fetchGroups();
   }, [token]);
 
-  useEffect(() => {
-    createGroup("grupperinnerhalbusegrou");
-  }, []);
-
   const fetchGroups = async () => {
     setLoading(true);
     try {

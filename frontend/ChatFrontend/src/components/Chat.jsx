@@ -69,7 +69,7 @@ const Chat = () => {
         marginLeft="325px"
       >
         <Flex
-          w="60%"
+          w="70%"
           h="90%"
           flexDir="column"
           style={{ border: "2px solid black", padding: "10px" }}

@@ -15,9 +15,9 @@ const Footer = ({ inputMessage, setInputMessage, handleSendMessage }) => {
         _focus={{
           border: "2px solid black !important",
         }}
-        onKeyPress={(e) => {
+        onKeyDownCapture={(e) => {
           if (e.key === "Enter") {
-            handleSendMessage();
+            handleSendMessage(e);
           }
         }}
         value={inputMessage}
